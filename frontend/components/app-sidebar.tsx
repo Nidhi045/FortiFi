@@ -168,8 +168,7 @@ export function AppSidebar() {
             <Shield className="h-6 w-6 text-primary" />
             <span>Fortifi</span>
           </div>
-          <div className="ml-auto flex items-center gap-2">
-            <SidebarTrigger />
+          <div className="ml-auto flex items-center">
             <ModeToggle />
           </div>
         </div>

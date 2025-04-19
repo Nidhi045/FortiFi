@@ -308,6 +308,7 @@ export function RecentTransactions({ userId = "all", showAll = false, showLargeO
   const [typeFilter, setTypeFilter] = useState("all")
   const [categoryFilter, setCategoryFilter] = useState("all")
   const [reportedTransactions, setReportedTransactions] = useState<Set<string>>(new Set())
+  const [pendingReportId, setPendingReportId] = useState<string | null>(null);
   const [date, setDate] = useState<Date | undefined>(undefined)
 
   // Get transactions based on userId and showLargeOnly flag
@@ -337,16 +338,30 @@ export function RecentTransactions({ userId = "all", showAll = false, showLargeO
     .filter((transaction) => !date || new Date(transaction.date).toDateString() === date.toDateString())
 
     const handleReportFraud = (id: string) => {
-      // Add the transaction ID to the reported set
-      setReportedTransactions(prev => new Set(prev).add(id));
-      
-      // Show toast
-      toast({
-        title: "Fraud report submitted",
-        description: `Transaction ${id} has been flagged for investigation.`,
-        variant: "destructive", // Optional: makes the toast stand out
-      });
-    }
+      const isConfirmed = confirm(
+        "Are you sure you want to report this transaction as fraudulent?\n\nThis action cannot be undone."
+      );
+    
+      if (isConfirmed) {
+        setReportedTransactions((prev) => new Set(prev).add(id));
+        alert(`Transaction ${id} has been flagged for investigation.`);
+      }
+    };
+
+    const handleUnflagTransaction = (id: string) => {
+      const isConfirmed = confirm(
+        "Are you sure you want to unflag this transaction?\n\nThis will remove the fraud report status."
+      );
+    
+      if (isConfirmed) {
+        setReportedTransactions((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(id);
+          return newSet;
+        });
+        alert(`Transaction ${id} has been unflagged.`);
+      }
+    };
 
   function convertToCSV(data: any[]) {
     if (data.length === 0) return '';
@@ -566,7 +581,7 @@ export function RecentTransactions({ userId = "all", showAll = false, showLargeO
                   <TableCell>{"userName" in transaction ? (transaction as any).userName : "Unknown"}</TableCell>
                 )}
                 <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
+                  <div suppressHydrationWarning className="flex items-center gap-2">
                     {new Date(transaction.date).toLocaleDateString()}
                     {reportedTransactions.has(transaction.id) && (
                       <Badge variant="destructive" className="text-xs">
@@ -596,16 +611,28 @@ export function RecentTransactions({ userId = "all", showAll = false, showLargeO
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleReportFraud(transaction.id)}
-                    title="Report Fraud"
-                    disabled={reportedTransactions.has(transaction.id)}
-                  >
-                    <Flag className={`h-4 w-4 ${reportedTransactions.has(transaction.id) ? "text-rose-500 fill-rose-500" : ""}`} />
-                  </Button>
-                </TableCell>
+                <div className="flex gap-1 justify-end">
+                  {reportedTransactions.has(transaction.id) ? (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleUnflagTransaction(transaction.id)}
+                      title="Unflag Transaction"
+                    >
+                      <Flag className="h-4 w-4 text-rose-500 fill-rose-500" />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleReportFraud(transaction.id)}
+                      title="Report Fraud"
+                    >
+                      <Flag className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </TableCell>
               </TableRow>
               ))
             ) : (

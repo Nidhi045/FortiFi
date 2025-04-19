@@ -121,8 +121,14 @@ const users = {
   },
 }
 
-export default function UserDetailsPage({ params }: { params: { id: string } }) {
-  const userId = params.id
+interface PageProps {
+  params: {
+    id: string
+  }
+}
+
+export default async function UserDetailsPage({ params }: PageProps) {
+  const { id: userId } = await params;
   const user = users[userId as keyof typeof users]
 
   if (!user) {
@@ -186,7 +192,7 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
       <div className="flex flex-col space-y-2">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" asChild>
-            <Link href="/admin/users">
+            <Link href="/manage/users">
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
@@ -194,9 +200,8 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
         </div>
         <p className="text-muted-foreground">Detailed information and risk analysis for {user.name}</p>
       </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-1">
+      <div>
+      <Card className="w-full">
           <CardHeader>
             <CardTitle>User Profile</CardTitle>
             <CardDescription>Personal and account information</CardDescription>
@@ -285,8 +290,8 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
             </div>
           </CardContent>
         </Card>
-
-        <Card className="md:col-span-2">
+<div className="p-3"></div>
+        <Card className="w-full">
           <Tabs defaultValue="details">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -300,7 +305,7 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
             </CardHeader>
 
             <TabsContent value="details" className="p-6 pt-0">
-              <UserDetails />
+              <UserDetails userId={userId} />
             </TabsContent>
 
             <TabsContent value="risk" className="space-y-6 p-6 pt-0">
@@ -547,6 +552,12 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
             </TabsContent>
           </Tabs>
         </Card>
+
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-3">
+
+        
       </div>
     </div>
   )

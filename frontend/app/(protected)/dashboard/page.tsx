@@ -166,7 +166,7 @@ export default function DashboardPage() {
         </TabsContent>
 
         <TabsContent value="users">
-          <UserDetails />
+          <UserDetails userId={""} />z
         </TabsContent>
 
         <TabsContent value="assistant">

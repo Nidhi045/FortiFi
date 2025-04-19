@@ -73,9 +73,9 @@ type User = {
   loans?: UserLoan[]
 }
 
-export function UserDetails() {
-  const [selectedUser, setSelectedUser] = useState("U12345")
 
+
+export function UserDetails({ userId }: { userId: string }) {
   // Sample user data
   const users: Record<string, User> = {
     U12345: {
@@ -304,6 +304,20 @@ export function UserDetails() {
     },
   }
 
+  const user = users[userId]
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center py-6 text-center">
+        <div className="rounded-full bg-muted p-3 mb-2">
+          <AlertTriangle className="h-6 w-6 text-muted-foreground" />
+        </div>
+        <h3 className="text-sm font-medium">User Not Found</h3>
+        <p className="text-xs text-muted-foreground mt-1">The requested user could not be found</p>
+      </div>
+    )
+  }
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return new Intl.DateTimeFormat("en-IN", {
@@ -314,8 +328,6 @@ export function UserDetails() {
       minute: "2-digit",
     }).format(date)
   }
-
-  const user = users[selectedUser]
 
   const getRiskBadge = (score: number) => {
     if (score >= 80) {
@@ -360,141 +372,20 @@ export function UserDetails() {
 
   return (
     <div suppressHydrationWarning className="space-y-6">
-      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">User Details</h2>
-          <p className="text-muted-foreground">View detailed information and analysis for bank customers</p>
-        </div>
-        <div className="w-full sm:w-auto">
-          <Select value={selectedUser} onValueChange={setSelectedUser}>
-            <SelectTrigger className="w-full sm:w-[200px]">
-              <SelectValue placeholder="Select user" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(users).map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-1">
-          <CardHeader>
-            <CardTitle>User Profile</CardTitle>
-            <CardDescription>Personal and account information</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={`/placeholder.svg?height=64&width=64&text=${user.name.charAt(0)}`} alt={user.name} />
-                <AvatarFallback>
-                  {user.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-lg font-medium">{user.name}</h3>
-                <p className="text-sm text-muted-foreground">ID: {user.id}</p>
-                <div className="mt-1 flex items-center gap-2">
-                  {getKycStatusBadge(user.kycStatus)}
-                  {getRiskBadge(user.riskScore)}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Email:</span>
-                <span className="font-medium">{user.email}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Phone:</span>
-                <span className="font-medium">{user.phone}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Address:</span>
-                <span className="font-medium text-right">{user.address}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Account Type:</span>
-                <span className="font-medium">{user.accountType}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Location:</span>
-                <span className="font-medium">{user.location}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Last Activity:</span>
-                <span className="font-medium">{formatDate(user.lastActivity)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Join Date:</span>
-                <span className="font-medium">{new Date(user.joinDate).toLocaleDateString()}</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium">Linked Accounts</h4>
-              {user.accounts.map((account) => (
-                <div key={account.id} className="rounded-md border p-3">
-                  <div className="flex justify-between">
-                    <div className="font-medium">{account.type}</div>
-                    <Badge variant="outline">{account.currency}</Badge>
-                  </div>
-                  <div className="mt-1 text-sm text-muted-foreground">{account.number}</div>
-                  <div className="mt-2 text-right font-bold">₹{account.balance.toLocaleString()}</div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-2">
-            <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href={`/admin/users/${user.id}/transactions`}>
-                <Shield className="mr-2 h-4 w-4" />
-                View Transactions
-              </Link>
-            </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <AlertTriangle className="mr-2 h-4 w-4" />
-              Flag for Review
-            </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <LockKeyhole className="mr-2 h-4 w-4" />
-              Reset Password
-            </Button>
-            {user.riskScore < 50 && (
-              <Button variant="destructive" className="w-full justify-start">
-                <Ban className="mr-2 h-4 w-4" />
-                Block Account
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
-
-        <Card className="md:col-span-2">
+        <Card className="w-full">
           <Tabs defaultValue="transactions">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>User Analysis</CardTitle>
                 <TabsList>
                   <TabsTrigger value="transactions">Transactions</TabsTrigger>
                   <TabsTrigger value="spending">Spending</TabsTrigger>
                   <TabsTrigger value="loans">Loans</TabsTrigger>
                 </TabsList>
               </div>
-              <CardDescription>Detailed analysis of user's financial activities</CardDescription>
             </CardHeader>
 
             <TabsContent value="transactions" className="space-y-4 p-6 pt-0">
-              <div className="rounded-md border">
                 <TransactionHistory userId={user.id} />
-              </div>
             </TabsContent>
 
             <TabsContent value="spending" className="space-y-6 p-6 pt-0">
@@ -728,7 +619,6 @@ export function UserDetails() {
             </TabsContent>
           </Tabs>
         </Card>
-      </div>
     </div>
   )
 }

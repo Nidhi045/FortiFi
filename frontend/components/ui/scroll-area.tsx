@@ -10,6 +10,7 @@ const ScrollArea = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
 >(({ className, children, ...props }, ref) => (
   <ScrollAreaPrimitive.Root
+  suppressHydrationWarning
     ref={ref}
     className={cn("relative overflow-hidden", className)}
     {...props}
@@ -28,6 +29,7 @@ const ScrollBar = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>
 >(({ className, orientation = "vertical", ...props }, ref) => (
   <ScrollAreaPrimitive.ScrollAreaScrollbar
+  suppressHydrationWarning
     ref={ref}
     orientation={orientation}
     className={cn(

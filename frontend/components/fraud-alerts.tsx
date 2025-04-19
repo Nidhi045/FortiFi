@@ -188,7 +188,7 @@ export function FraudAlerts({ userId }: FraudAlertsProps) {
                           <span className="text-sm font-medium">{alert.title}</span>
                           <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
                         </div>
-                        <p className="text-xs text-muted-foreground">{new Date(alert.date).toLocaleDateString()}</p>
+                        <p suppressHydrationWarning className="text-xs text-muted-foreground">{new Date(alert.date).toLocaleDateString()}</p>
                       </div>
                     </div>
                   ))}
