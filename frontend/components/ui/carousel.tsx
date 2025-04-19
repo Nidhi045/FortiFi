@@ -157,7 +157,7 @@ const CarouselContent = React.forwardRef<
   const { carouselRef, orientation } = useCarousel()
 
   return (
-    <div ref={carouselRef} className="overflow-hidden">
+    <div suppressHydrationWarning ref={carouselRef} className="overflow-hidden">
       <div
         ref={ref}
         className={cn(
@@ -180,6 +180,7 @@ const CarouselItem = React.forwardRef<
 
   return (
     <div
+    suppressHydrationWarning
       ref={ref}
       role="group"
       aria-roledescription="slide"
@@ -202,6 +203,7 @@ const CarouselPrevious = React.forwardRef<
 
   return (
     <Button
+    suppressHydrationWarning
       ref={ref}
       variant={variant}
       size={size}
@@ -231,6 +233,7 @@ const CarouselNext = React.forwardRef<
 
   return (
     <Button
+    suppressHydrationWarning
       ref={ref}
       variant={variant}
       size={size}

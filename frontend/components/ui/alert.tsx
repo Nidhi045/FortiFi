@@ -25,6 +25,7 @@ const Alert = React.forwardRef<
 >(({ className, variant, ...props }, ref) => (
   <div
     ref={ref}
+    suppressHydrationWarning
     role="alert"
     className={cn(alertVariants({ variant }), className)}
     {...props}
@@ -37,6 +38,7 @@ const AlertTitle = React.forwardRef<
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
   <h5
+  suppressHydrationWarning
     ref={ref}
     className={cn("mb-1 font-medium leading-none tracking-tight", className)}
     {...props}
@@ -49,6 +51,7 @@ const AlertDescription = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
   <div
+  suppressHydrationWarning
     ref={ref}
     className={cn("text-sm [&_p]:leading-relaxed", className)}
     {...props}

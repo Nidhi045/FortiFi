@@ -27,6 +27,7 @@ const DrawerOverlay = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Overlay
+  suppressHydrationWarning
     ref={ref}
     className={cn("fixed inset-0 z-50 bg-black/80", className)}
     {...props}
@@ -41,6 +42,7 @@ const DrawerContent = React.forwardRef<
   <DrawerPortal>
     <DrawerOverlay />
     <DrawerPrimitive.Content
+    suppressHydrationWarning
       ref={ref}
       className={cn(
         "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
@@ -59,7 +61,7 @@ const DrawerHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
+  <div suppressHydrationWarning
     className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)}
     {...props}
   />
@@ -70,7 +72,7 @@ const DrawerFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
+  <div suppressHydrationWarning
     className={cn("mt-auto flex flex-col gap-2 p-4", className)}
     {...props}
   />
@@ -82,6 +84,7 @@ const DrawerTitle = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title>
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Title
+  suppressHydrationWarning
     ref={ref}
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
@@ -97,6 +100,7 @@ const DrawerDescription = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Description
+  suppressHydrationWarning
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}

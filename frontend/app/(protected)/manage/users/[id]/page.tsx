@@ -182,7 +182,7 @@ export default function UserDetailsPage({ params }: { params: { id: string } }) 
   }
 
   return (
-    <div className="space-y-6 w-full">
+    <div suppressHydrationWarning className="space-y-6 w-full">
       <div className="flex flex-col space-y-2">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" asChild>

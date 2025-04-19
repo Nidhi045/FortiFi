@@ -9,7 +9,7 @@ import { Download, RefreshCw, HelpCircle, FileText } from "lucide-react"
 
 export default function FraudSimulationClientPage() {
   return (
-    <div className="space-y-6 w-full">
+    <div suppressHydrationWarning className="space-y-6 w-full">
       <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Fraud Simulation Sandbox</h1>

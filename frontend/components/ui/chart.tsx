@@ -49,6 +49,7 @@ const ChartContainer = React.forwardRef<
   return (
     <ChartContext.Provider value={{ config }}>
       <div
+      suppressHydrationWarning
         data-chart={chartId}
         ref={ref}
         className={cn(
@@ -176,7 +177,7 @@ const ChartTooltipContent = React.forwardRef<
     const nestLabel = payload.length === 1 && indicator !== "dot"
 
     return (
-      <div
+      <div suppressHydrationWarning
         ref={ref}
         className={cn(
           "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
@@ -277,7 +278,7 @@ const ChartLegendContent = React.forwardRef<
     }
 
     return (
-      <div
+      <div suppressHydrationWarning
         ref={ref}
         className={cn(
           "flex items-center justify-center gap-4",

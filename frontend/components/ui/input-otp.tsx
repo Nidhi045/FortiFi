@@ -38,7 +38,7 @@ const InputOTPSlot = React.forwardRef<
   const { char, hasFakeCaret, isActive } = inputOTPContext.slots[index]
 
   return (
-    <div
+    <div suppressHydrationWarning
       ref={ref}
       className={cn(
         "relative flex h-10 w-10 items-center justify-center border-y border-r border-input text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
@@ -62,7 +62,7 @@ const InputOTPSeparator = React.forwardRef<
   React.ElementRef<"div">,
   React.ComponentPropsWithoutRef<"div">
 >(({ ...props }, ref) => (
-  <div ref={ref} role="separator" {...props}>
+  <div suppressHydrationWarning ref={ref} role="separator" {...props}>
     <Dot />
   </div>
 ))

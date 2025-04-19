@@ -251,7 +251,7 @@ export function SimulationResults() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-12">
+      <div suppressHydrationWarning className="flex flex-col items-center justify-center space-y-4 py-12">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         <p className="text-sm text-muted-foreground">Analyzing fraud scenario...</p>
       </div>
@@ -260,7 +260,7 @@ export function SimulationResults() {
 
   if (!result) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
+      <div suppressHydrationWarning className="flex flex-col items-center justify-center space-y-4 py-12 text-center">
         <Shield className="h-12 w-12 text-muted-foreground" />
         <div>
           <p className="font-medium">No simulation results</p>
@@ -271,7 +271,7 @@ export function SimulationResults() {
   }
 
   return (
-    <Tabs defaultValue="overview" className="space-y-4">
+    <Tabs suppressHydrationWarning defaultValue="overview" className="space-y-4">
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="fraudster">Fraudster View</TabsTrigger>

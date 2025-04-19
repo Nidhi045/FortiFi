@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 
 export default function VirtualCardsClientPage() {
   return (
-    <div className="space-y-6 w-full">
+    <div suppressHydrationWarning className="space-y-6 w-full">
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Virtual Cards</h1>
         <p className="text-muted-foreground">Manage and monitor virtual cards across all users</p>

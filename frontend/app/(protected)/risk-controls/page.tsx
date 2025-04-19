@@ -8,7 +8,7 @@ import { Download, RefreshCw, HelpCircle, Save } from "lucide-react"
 
 export default function RiskControlsClientPage() {
   return (
-    <div className="space-y-6 w-full">
+    <div suppressHydrationWarning className="space-y-6 w-full">
       <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Risk-Based Transaction Controls</h1>

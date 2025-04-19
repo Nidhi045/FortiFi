@@ -9,7 +9,7 @@ const Breadcrumb = React.forwardRef<
   React.ComponentPropsWithoutRef<"nav"> & {
     separator?: React.ReactNode
   }
->(({ ...props }, ref) => <nav ref={ref} aria-label="breadcrumb" {...props} />)
+>(({ ...props }, ref) => <nav suppressHydrationWarning ref={ref} aria-label="breadcrumb" {...props} />)
 Breadcrumb.displayName = "Breadcrumb"
 
 const BreadcrumbList = React.forwardRef<
@@ -17,6 +17,7 @@ const BreadcrumbList = React.forwardRef<
   React.ComponentPropsWithoutRef<"ol">
 >(({ className, ...props }, ref) => (
   <ol
+  suppressHydrationWarning
     ref={ref}
     className={cn(
       "flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5",
@@ -32,6 +33,7 @@ const BreadcrumbItem = React.forwardRef<
   React.ComponentPropsWithoutRef<"li">
 >(({ className, ...props }, ref) => (
   <li
+  suppressHydrationWarning
     ref={ref}
     className={cn("inline-flex items-center gap-1.5", className)}
     {...props}
@@ -49,6 +51,7 @@ const BreadcrumbLink = React.forwardRef<
 
   return (
     <Comp
+    suppressHydrationWarning
       ref={ref}
       className={cn("transition-colors hover:text-foreground", className)}
       {...props}
@@ -62,6 +65,7 @@ const BreadcrumbPage = React.forwardRef<
   React.ComponentPropsWithoutRef<"span">
 >(({ className, ...props }, ref) => (
   <span
+  suppressHydrationWarning
     ref={ref}
     role="link"
     aria-disabled="true"
@@ -78,6 +82,7 @@ const BreadcrumbSeparator = ({
   ...props
 }: React.ComponentProps<"li">) => (
   <li
+  suppressHydrationWarning
     role="presentation"
     aria-hidden="true"
     className={cn("[&>svg]:w-3.5 [&>svg]:h-3.5", className)}
@@ -93,6 +98,7 @@ const BreadcrumbEllipsis = ({
   ...props
 }: React.ComponentProps<"span">) => (
   <span
+  suppressHydrationWarning
     role="presentation"
     aria-hidden="true"
     className={cn("flex h-9 w-9 items-center justify-center", className)}

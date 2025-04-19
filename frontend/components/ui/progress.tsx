@@ -12,6 +12,7 @@ const Progress = React.forwardRef<
   }
 >(({ className, value, indicatorClassName, ...props }, ref) => (
   <ProgressPrimitive.Root
+  suppressHydrationWarning
     ref={ref}
     className={cn(
       "relative h-4 w-full overflow-hidden rounded-full bg-secondary",
@@ -20,6 +21,7 @@ const Progress = React.forwardRef<
     {...props}
   >
     <ProgressPrimitive.Indicator
+    suppressHydrationWarning
       className={cn(
         "h-full w-full flex-1 bg-primary transition-all",
         indicatorClassName

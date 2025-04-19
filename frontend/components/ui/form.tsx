@@ -93,7 +93,7 @@ const FormLabel = React.forwardRef<
   const { error, formItemId } = useFormField()
 
   return (
-    <Label
+    <Label suppressHydrationWarning
       ref={ref}
       className={cn(error && "text-destructive", className)}
       htmlFor={formItemId}
@@ -110,7 +110,7 @@ const FormControl = React.forwardRef<
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
   return (
-    <Slot
+    <Slot suppressHydrationWarning
       ref={ref}
       id={formItemId}
       aria-describedby={
@@ -132,7 +132,7 @@ const FormDescription = React.forwardRef<
   const { formDescriptionId } = useFormField()
 
   return (
-    <p
+    <p suppressHydrationWarning
       ref={ref}
       id={formDescriptionId}
       className={cn("text-sm text-muted-foreground", className)}
@@ -154,7 +154,7 @@ const FormMessage = React.forwardRef<
   }
 
   return (
-    <p
+    <p suppressHydrationWarning
       ref={ref}
       id={formMessageId}
       className={cn("text-sm font-medium text-destructive", className)}

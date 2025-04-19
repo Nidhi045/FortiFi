@@ -180,7 +180,7 @@ export function IdentityVault() {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+    <Tabs suppressHydrationWarning value={activeTab} onValueChange={setActiveTab} className="space-y-6">
       <TabsList className="grid grid-cols-3 w-full">
         <TabsTrigger value="security">Identity Security</TabsTrigger>
         <TabsTrigger value="forum">Fraud Pattern Forum</TabsTrigger>
