@@ -18,7 +18,7 @@ export function NewVirtualCardForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [cardSettings, setCardSettings] = useState({
-    spendLimit: 500,
+    spendLimit: 50000,
     expiryDays: 30,
     merchantLock: false,
     merchantName: "",
@@ -26,7 +26,7 @@ export function NewVirtualCardForm() {
     categoryRestriction: false,
     category: "all",
     geoRestriction: false,
-    country: "US",
+    country: "IN",
   })
 
   const handleSpendLimitChange = (value: number[]) => {
@@ -68,24 +68,24 @@ export function NewVirtualCardForm() {
   }
 
   return (
-    <form suppressHydrationWarning onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="spendLimit">Spending Limit (USD)</Label>
+          <Label htmlFor="spendLimit">Spending Limit (₹)</Label>
           <div className="pt-5 pb-2">
             <Slider
               id="spendLimit"
-              min={50}
-              max={5000}
-              step={50}
+              min={5000}
+              max={500000}
+              step={5000}
               value={[cardSettings.spendLimit]}
               onValueChange={handleSpendLimitChange}
             />
           </div>
           <div className="flex justify-between text-sm">
-            <span>$50</span>
-            <span className="font-medium">${cardSettings.spendLimit.toLocaleString()}</span>
-            <span>$5,000</span>
+            <span>₹5,000</span>
+            <span className="font-medium">₹{cardSettings.spendLimit.toLocaleString("en-IN")}</span>
+            <span>₹5,00,000</span>
           </div>
         </div>
 
@@ -204,11 +204,11 @@ export function NewVirtualCardForm() {
                 <SelectValue placeholder="Select country" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="IN">India</SelectItem>
                 <SelectItem value="US">United States</SelectItem>
                 <SelectItem value="UK">United Kingdom</SelectItem>
-                <SelectItem value="CA">Canada</SelectItem>
-                <SelectItem value="AU">Australia</SelectItem>
-                <SelectItem value="EU">European Union</SelectItem>
+                <SelectItem value="SG">Singapore</SelectItem>
+                <SelectItem value="AE">UAE</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -226,4 +226,3 @@ export function NewVirtualCardForm() {
     </form>
   )
 }
-

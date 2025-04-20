@@ -15,10 +15,10 @@ export function TransactionSimulator() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [transaction, setTransaction] = useState({
-    amount: 100,
+    amount: 1000,
     merchant: "",
     category: "retail",
-    country: "US",
+    country: "IN",
     useNewDevice: false,
     useVPN: false,
   })
@@ -68,20 +68,20 @@ export function TransactionSimulator() {
   return (
     <form suppressHydrationWarning onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="amount">Transaction Amount (USD)</Label>
+        <Label htmlFor="amount">Transaction Amount (INR)</Label>
         <div className="pt-5 pb-2">
           <Slider
             id="amount"
-            min={10}
-            max={10000}
-            step={10}
+            min={100}
+            max={1000000}
+            step={100}
             value={[transaction.amount]}
             onValueChange={handleAmountChange}
           />
         </div>
         <div className="flex justify-between text-sm">
-          <span>${transaction.amount.toFixed(2)}</span>
-          <span className="text-muted-foreground">{transaction.amount >= 1000 ? "High Value" : "Standard"}</span>
+          <span>₹{transaction.amount.toLocaleString("en-IN")}</span>
+          <span className="text-muted-foreground">{transaction.amount >= 100000 ? "High Value" : "Standard"}</span>
         </div>
       </div>
 
@@ -122,13 +122,12 @@ export function TransactionSimulator() {
               <SelectValue placeholder="Select country" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="IN">India</SelectItem>
               <SelectItem value="US">United States</SelectItem>
               <SelectItem value="UK">United Kingdom</SelectItem>
               <SelectItem value="CA">Canada</SelectItem>
               <SelectItem value="AU">Australia</SelectItem>
-              <SelectItem value="RU">Russia</SelectItem>
               <SelectItem value="CN">China</SelectItem>
-              <SelectItem value="NG">Nigeria</SelectItem>
               <SelectItem value="OTHER">Other</SelectItem>
             </SelectContent>
           </Select>
@@ -167,10 +166,10 @@ export function TransactionSimulator() {
           variant="outline"
           onClick={() =>
             setTransaction({
-              amount: 100,
+              amount: 1000,
               merchant: "",
               category: "retail",
-              country: "US",
+              country: "IN",
               useNewDevice: false,
               useVPN: false,
             })
@@ -185,4 +184,3 @@ export function TransactionSimulator() {
     </form>
   )
 }
-

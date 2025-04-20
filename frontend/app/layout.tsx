@@ -4,13 +4,17 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SidebarProvider } from "@/components/ui/sidebar"
+import { AccountProvider } from "@/components/indian-bank/context/account-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Secure Banking & Fraud Detection",
-  description: "A platform for secure banking and fraud prevention",
-    generator: 'v0.dev'
+  title: "Fortifi - Secure Banking Platform",
+  description: "A comprehensive platform for secure banking and fraud prevention",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -21,8 +25,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <SidebarProvider>{children}</SidebarProvider>
+        <ThemeProvider 
+          attribute="class" 
+          defaultTheme="dark" 
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <AccountProvider>
+            <SidebarProvider>{children}</SidebarProvider>
+          </AccountProvider>
         </ThemeProvider>
       </body>
     </html>

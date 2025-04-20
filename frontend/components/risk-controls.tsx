@@ -28,6 +28,8 @@ export function RiskControls() {
     mfaThreshold: 500,
   })
 
+  const [riskProfile, setRiskProfile] = useState("balanced")
+
   const handleToggle = (setting: string) => {
     setSettings({
       ...settings,
@@ -45,6 +47,11 @@ export function RiskControls() {
       ...limits,
       [name]: value[0],
     })
+
+    toast({
+      title: "Limit updated",
+      description: `${name.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())} has been set to ₹${value[0].toLocaleString("en-IN")}.`,
+    })
   }
 
   const handleSaveChanges = () => {
@@ -54,8 +61,56 @@ export function RiskControls() {
     })
   }
 
+  const handleSetRiskProfile = (profile: string) => {
+    setRiskProfile(profile)
+
+    // Update settings based on profile
+    if (profile === "standard") {
+      setSettings({
+        ...settings,
+        transactionTimeLock: false,
+        blockHighRiskCountries: false,
+        deviceVerification: false,
+      })
+      setLimits({
+        ...limits,
+        dailyLimit: 5000,
+        singleTransactionLimit: 2000,
+      })
+    } else if (profile === "balanced") {
+      setSettings({
+        ...settings,
+        transactionTimeLock: false,
+        blockHighRiskCountries: false,
+        deviceVerification: true,
+      })
+      setLimits({
+        ...limits,
+        dailyLimit: 2000,
+        singleTransactionLimit: 1000,
+      })
+    } else if (profile === "highSecurity") {
+      setSettings({
+        ...settings,
+        transactionTimeLock: true,
+        blockHighRiskCountries: true,
+        deviceVerification: true,
+      })
+      setLimits({
+        ...limits,
+        dailyLimit: 1000,
+        singleTransactionLimit: 500,
+      })
+    }
+
+    toast({
+      title: "Risk profile updated",
+      description: `Your risk profile has been set to ${profile.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())}.`,
+    })
+  }
+
   return (
-    <Tabs suppressHydrationWarning defaultValue="controls" className="space-y-4">
+    <Tabs defaultValue="controls" className="space-y-4">
       <TabsList>
         <TabsTrigger value="controls">Security Controls</TabsTrigger>
         <TabsTrigger value="limits">Transaction Limits</TabsTrigger>
@@ -173,17 +228,17 @@ export function RiskControls() {
             <div className="pt-5 pb-2">
               <Slider
                 id="dailyLimit"
-                min={500}
-                max={10000}
-                step={100}
+                min={10000}
+                max={200000}
+                step={5000}
                 value={[limits.dailyLimit]}
                 onValueChange={(value) => handleLimitChange("dailyLimit", value)}
               />
             </div>
             <div className="flex justify-between text-sm">
-              <span>$500</span>
-              <span className="font-medium">${limits.dailyLimit.toLocaleString()}</span>
-              <span>$10,000</span>
+              <span>₹10,000</span>
+              <span className="font-medium">₹{limits.dailyLimit.toLocaleString("en-IN")}</span>
+              <span>₹2,00,000</span>
             </div>
             <p className="text-sm text-muted-foreground">Maximum amount that can be spent in a 24-hour period</p>
           </div>
@@ -195,17 +250,17 @@ export function RiskControls() {
             <div className="pt-5 pb-2">
               <Slider
                 id="singleTransactionLimit"
-                min={100}
-                max={5000}
-                step={100}
+                min={5000}
+                max={100000}
+                step={5000}
                 value={[limits.singleTransactionLimit]}
                 onValueChange={(value) => handleLimitChange("singleTransactionLimit", value)}
               />
             </div>
             <div className="flex justify-between text-sm">
-              <span>$100</span>
-              <span className="font-medium">${limits.singleTransactionLimit.toLocaleString()}</span>
-              <span>$5,000</span>
+              <span>₹5,000</span>
+              <span className="font-medium">₹{limits.singleTransactionLimit.toLocaleString("en-IN")}</span>
+              <span>₹1,00,000</span>
             </div>
             <p className="text-sm text-muted-foreground">Maximum amount for a single transaction</p>
           </div>
@@ -217,17 +272,17 @@ export function RiskControls() {
             <div className="pt-5 pb-2">
               <Slider
                 id="timeLockThreshold"
-                min={1000}
-                max={20000}
-                step={1000}
+                min={25000}
+                max={500000}
+                step={25000}
                 value={[limits.timeLockThreshold]}
                 onValueChange={(value) => handleLimitChange("timeLockThreshold", value)}
               />
             </div>
             <div className="flex justify-between text-sm">
-              <span>$1,000</span>
-              <span className="font-medium">${limits.timeLockThreshold.toLocaleString()}</span>
-              <span>$20,000</span>
+              <span>₹25,000</span>
+              <span className="font-medium">₹{limits.timeLockThreshold.toLocaleString("en-IN")}</span>
+              <span>₹5,00,000</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Transactions above this amount will be time-locked for review
@@ -241,17 +296,17 @@ export function RiskControls() {
             <div className="pt-5 pb-2">
               <Slider
                 id="mfaThreshold"
-                min={100}
-                max={2000}
-                step={100}
+                min={5000}
+                max={50000}
+                step={5000}
                 value={[limits.mfaThreshold]}
                 onValueChange={(value) => handleLimitChange("mfaThreshold", value)}
               />
             </div>
             <div className="flex justify-between text-sm">
-              <span>$100</span>
-              <span className="font-medium">${limits.mfaThreshold.toLocaleString()}</span>
-              <span>$2,000</span>
+              <span>₹5,000</span>
+              <span className="font-medium">₹{limits.mfaThreshold.toLocaleString("en-IN")}</span>
+              <span>₹50,000</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Transactions above this amount will require additional authentication
@@ -303,13 +358,25 @@ export function RiskControls() {
             Choose your preferred balance between security and convenience
           </p>
           <div className="flex space-x-2 pt-2">
-            <Button variant="outline" className="flex-1">
+            <Button
+              variant={riskProfile === "standard" ? "default" : "outline"}
+              className="flex-1"
+              onClick={() => handleSetRiskProfile("standard")}
+            >
               Standard
             </Button>
-            <Button variant="default" className="flex-1">
+            <Button
+              variant={riskProfile === "balanced" ? "default" : "outline"}
+              className="flex-1"
+              onClick={() => handleSetRiskProfile("balanced")}
+            >
               Balanced
             </Button>
-            <Button variant="outline" className="flex-1">
+            <Button
+              variant={riskProfile === "highSecurity" ? "default" : "outline"}
+              className="flex-1"
+              onClick={() => handleSetRiskProfile("highSecurity")}
+            >
               High Security
             </Button>
           </div>
@@ -317,10 +384,38 @@ export function RiskControls() {
       </TabsContent>
 
       <div className="flex justify-end space-x-2 pt-4">
-        <Button variant="outline">Reset to Defaults</Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            // Reset to defaults
+            setSettings({
+              dynamicSpendControl: true,
+              transactionTimeLock: false,
+              multiFactorLargePayments: true,
+              locationBasedApproval: true,
+              deviceVerification: true,
+              aiRiskScoring: true,
+              blockHighRiskCountries: false,
+              blockHighRiskMerchants: true,
+            })
+            setLimits({
+              dailyLimit: 2000,
+              singleTransactionLimit: 1000,
+              timeLockThreshold: 5000,
+              mfaThreshold: 500,
+            })
+            setRiskProfile("balanced")
+
+            toast({
+              title: "Settings reset",
+              description: "Your risk control settings have been reset to default values.",
+            })
+          }}
+        >
+          Reset to Defaults
+        </Button>
         <Button onClick={handleSaveChanges}>Save Changes</Button>
       </div>
     </Tabs>
   )
 }
-

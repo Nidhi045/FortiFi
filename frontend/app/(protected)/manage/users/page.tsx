@@ -19,8 +19,10 @@ import {
   XCircle,
   Download,
   UserPlus,
+  ChevronDown,
 } from "lucide-react"
 import { useState } from "react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 
 // Sample user data
 const usersData = [
@@ -188,12 +190,158 @@ export default function UsersPageClient() {
   }
 
   const handleGenerateReport = () => {
-    alert("Generating risk report for all users...")
-  }
+    // In a real implementation, you would generate a PDF here
+    // For this example, we'll create a CSV report similar to the export but with more risk analysis
+    
+    try {
+      const reportData = filteredUsers.map(user => ({
+        id: user.id,
+        name: user.name,
+        riskScore: user.riskScore,
+        riskLevel: user.riskScore >= 80 ? "Low" : user.riskScore >= 60 ? "Medium" : "High",
+        kycStatus: user.kycStatus,
+        accountType: user.accountType,
+        lastActivity: new Date(user.lastActivity).toLocaleString('en-IN'),
+        recommendedAction: user.riskScore < 60 ? "Review Immediately" : 
+                         user.riskScore < 80 ? "Monitor Closely" : "Normal Monitoring"
+      }));
+  
+      // Create CSV content
+      const headers = [
+        'User ID',
+        'Name',
+        'Risk Score',
+        'Risk Level',
+        'KYC Status',
+        'Account Type',
+        'Last Activity',
+        'Recommended Action'
+      ];
+  
+      const rows = reportData.map(user => [
+        user.id,
+        `"${user.name}"`,
+        user.riskScore,
+        user.riskLevel,
+        user.kycStatus,
+        user.accountType,
+        `"${user.lastActivity}"`,
+        user.recommendedAction
+      ]);
+  
+      const content = [
+        "Bank User Risk Assessment Report",
+        `Generated on: ${new Date().toLocaleString('en-IN')}`,
+        `Total Users: ${filteredUsers.length}`,
+        `High Risk: ${filteredUsers.filter(u => u.riskScore < 60).length}`,
+        `Medium Risk: ${filteredUsers.filter(u => u.riskScore >= 60 && u.riskScore < 80).length}`,
+        `Low Risk: ${filteredUsers.filter(u => u.riskScore >= 80).length}`,
+        "",
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+  
+      // Create download link
+      const blob = new Blob([content], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `user-risk-report-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Report generation failed:', error);
+      alert("Report generation failed. Please try again.");
+    }
+  };
 
-  const handleExportUsers = () => {
-    alert("Exporting user data to CSV...")
-  }
+  const handleExportUsers = (format: 'csv' | 'json' = 'csv') => {
+    // Get the users to export based on current filters
+    const usersToExport = filteredUsers;
+  
+    if (usersToExport.length === 0) {
+      alert("No users to export matching current filters");
+      return;
+    }
+  
+    try {
+      let content: string;
+      let mimeType: string;
+      let fileName: string;
+  
+      if (format === 'json') {
+        // Prepare JSON export
+        const exportData = usersToExport.map(user => ({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          riskScore: user.riskScore,
+          riskLevel: user.riskScore >= 80 ? "Low" : user.riskScore >= 60 ? "Medium" : "High",
+          kycStatus: user.kycStatus,
+          accountType: user.accountType,
+          location: user.location,
+          lastActivity: user.lastActivity
+        }));
+  
+        content = JSON.stringify(exportData, null, 2);
+        mimeType = 'application/json';
+        fileName = `users-export-${new Date().toISOString().split('T')[0]}.json`;
+      } else {
+        // Prepare CSV export
+        const headers = [
+          'User ID',
+          'Name',
+          'Email',
+          'Phone',
+          'Risk Score',
+          'Risk Level',
+          'KYC Status',
+          'Account Type',
+          'Location',
+          'Last Activity'
+        ];
+  
+        const rows = usersToExport.map(user => [
+          user.id,
+          `"${user.name}"`,
+          user.email,
+          user.phone,
+          user.riskScore,
+          user.riskScore >= 80 ? "Low" : user.riskScore >= 60 ? "Medium" : "High",
+          user.kycStatus,
+          user.accountType,
+          `"${user.location}"`,
+          new Date(user.lastActivity).toLocaleString('en-IN')
+        ]);
+  
+        // Convert to CSV string
+        content = [
+          headers.join(','),
+          ...rows.map(row => row.join(','))
+        ].join('\n');
+  
+        mimeType = 'text/csv';
+        fileName = `users-export-${new Date().toISOString().split('T')[0]}.csv`;
+      }
+  
+      // Create download link
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert("Export failed. Please try again.");
+    }
+  };
 
   const filteredUsers = users
     .filter((user) => {
@@ -248,10 +396,23 @@ export default function UsersPageClient() {
           />
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-        <Button variant="outline" size="sm" onClick={handleExportUsers}>
-              <Download className="mr-2 h-4 w-4" />
-              Export Users
-            </Button>
+        <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button variant="outline" size="sm">
+        <Download className="mr-2 h-4 w-4" />
+        Export Users
+        <ChevronDown className="ml-1 h-4 w-4" />
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end">
+      <DropdownMenuItem onClick={() => handleExportUsers('csv')}>
+        Export as CSV
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={() => handleExportUsers('json')}>
+        Export as JSON
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
           <Select value={statusFilter} onValueChange={handleFilterChange}>
             <SelectTrigger className="w-full sm:w-[180px]">
               <Filter className="mr-2 h-4 w-4" />

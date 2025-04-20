@@ -11,7 +11,7 @@ export default function ProtectedLayout({
     <SidebarProvider suppressHydrationWarning>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <SidebarInset className="p-6 w-full">{children}</SidebarInset>
+        <SidebarInset className="p-8 w-full">{children}</SidebarInset>
       </div>
     </SidebarProvider>
   )

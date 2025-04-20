@@ -153,15 +153,11 @@ export function BlockchainLogs() {
   return (
     <div suppressHydrationWarning className="space-y-4">
       <div className="flex justify-between items-center">
-        <div className="flex items-center text-sm text-muted-foreground">
+        <div suppressHydrationWarning className="flex items-center text-sm text-muted-foreground">
           <Clock className="mr-1 h-4 w-4" />
           Last updated: {new Date().toLocaleString()}
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm">
-            <Filter className="mr-1 h-4 w-4" />
-            Filter
-          </Button>
           <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
             <RefreshCw className={`mr-1 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh

@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 
-type CredentialType = "email" | "phone" | "card" | "username"
+type CredentialType = "email" | "phone" | "card" 
 
 export function CredentialChecker() {
   const { toast } = useToast()
@@ -52,14 +52,14 @@ export function CredentialChecker() {
         toast({
           variant: "destructive",
           title: "Credential compromised",
-          description: "Your credential was found in 3 data breaches.",
+          description: "Your user's credential was found in 3 data breaches.",
         })
       } else {
         setResult("safe")
 
         toast({
           title: "Credential check complete",
-          description: "Good news! Your credential appears to be safe.",
+          description: "Good news! Your user's credential appears to be safe.",
         })
       }
     }, 2000)
@@ -68,13 +68,11 @@ export function CredentialChecker() {
   const getPlaceholder = () => {
     switch (credentialType) {
       case "email":
-        return "Enter your email address"
+        return "Enter your user's email address"
       case "phone":
-        return "Enter your phone number"
+        return "Enter your user's phone number"
       case "card":
-        return "Enter last 4 digits of your card"
-      case "username":
-        return "Enter your username"
+        return "Enter last 4 digits of your user's card"
       default:
         return "Enter your credential"
     }
@@ -93,7 +91,6 @@ export function CredentialChecker() {
               <SelectItem value="email">Email Address</SelectItem>
               <SelectItem value="phone">Phone Number</SelectItem>
               <SelectItem value="card">Card Number</SelectItem>
-              <SelectItem value="username">Username</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -112,7 +109,7 @@ export function CredentialChecker() {
             />
           </div>
           <p className="text-xs text-muted-foreground">
-            Your credential is securely hashed before checking against breach databases.
+            Your user's credential is securely hashed before checking against breach databases.
           </p>
         </div>
 
@@ -156,10 +153,10 @@ export function CredentialChecker() {
                 }`}
               >
                 {result === "safe" ? (
-                  <p>Your credential was not found in any known data breaches.</p>
+                  <p>Your user's credential was not found in any known data breaches.</p>
                 ) : (
                   <>
-                    <p>Your credential was found in the following data breaches:</p>
+                    <p>Your user's credential was found in the following data breaches:</p>
                     <ul className="mt-2 list-disc pl-5 space-y-1">
                       {breaches.map((breach, index) => (
                         <li key={index}>{breach}</li>
@@ -181,10 +178,10 @@ export function CredentialChecker() {
       <div className="text-sm text-muted-foreground">
         <h4 className="font-medium">How it works:</h4>
         <ol className="list-decimal pl-5 mt-2 space-y-1">
-          <li>Your credential is securely hashed using SHA-256</li>
+          <li>Your user's credential is securely hashed using SHA-256</li>
           <li>Only the hash is sent to our secure API</li>
           <li>We check against known data breaches and dark web databases</li>
-          <li>Results are displayed without storing your credential</li>
+          <li>Results are displayed without storing your user's credential</li>
         </ol>
       </div>
     </div>

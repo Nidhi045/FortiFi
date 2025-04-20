@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { Shield, CheckCircle, XCircle, AlertTriangle, Key, Lock, MessageSquare, Users, FileText } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Shield, CheckCircle, XCircle, AlertTriangle, Key, Lock, MessageSquare, Users, FileText, Wallet } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -11,14 +11,61 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
+import { toast, useToast } from "@/hooks/use-toast"
 import { BlockchainLogs } from "@/components/blockchain-logs"
+
+declare global {
+  interface Window {
+    ethereum?: any
+  }
+}
+
+interface ForumPost {
+  id: string
+  title: string
+  content: string
+  author: string
+  date: string
+  likes: number
+}
+
+const initialForumPosts: ForumPost[] = [
+  {
+    id: "post1",
+    title: "New Synthetic Identity Fraud Pattern",
+    author: "Axis Bank Security Team",
+    date: "2025-04-01T10:30:00Z",
+    content:
+      "We've detected a new pattern of synthetic identity fraud where fraudsters are combining real PAN cards with fake Aadhaar details. The pattern involves creating accounts with minimal KYC and then gradually building credit history before maxing out credit lines.",
+    likes: 24,
+  },
+  {
+    id: "post2",
+    title: "UPI Fraud Alert - QR Code Manipulation",
+    author: "HDFC Fraud Prevention",
+    date: "2025-04-03T14:15:00Z",
+    content:
+      "There's an increasing trend of QR code manipulation where fraudsters are overlaying legitimate merchant QR codes with their own. We've seen this particularly in high-traffic areas like railway stations and shopping malls. Customers should verify the merchant name before completing transactions.",
+    likes: 32,
+  },
+  {
+    id: "post3",
+    title: "Card Skimming at ATMs in Mumbai",
+    author: "SBI Security",
+    date: "2025-04-05T09:45:00Z",
+    content:
+      "We've identified several ATMs in Mumbai with sophisticated skimming devices. These devices are nearly invisible and capture both card data and PIN. We recommend banks increase physical inspections of ATMs and customers to use contactless withdrawals where available.",
+    likes: 18,
+  },
+]
 
 export function IdentityVault() {
   const { toast } = useToast()
+  const [walletAddress, setWalletAddress] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("security")
   const [newPost, setNewPost] = useState({ title: "", content: "" })
+  const [forumPosts, setForumPosts] = useState<ForumPost[]>(initialForumPosts)
   const [securityFeatures, setSecurityFeatures] = useState([
     {
       name: "Credential Encryption",
@@ -49,41 +96,45 @@ export function IdentityVault() {
 
   // Sample identity security data
   const securityScore = 85
-  const lastScan = "2025-04-02T14:30:00Z"
+  const lastScan = new Date().toISOString();
 
   // Sample forum posts
-  const forumPosts = [
-    {
-      id: "post1",
-      title: "New Synthetic Identity Fraud Pattern",
-      author: "Axis Bank Security Team",
-      date: "2025-04-01T10:30:00Z",
-      content:
-        "We've detected a new pattern of synthetic identity fraud where fraudsters are combining real PAN cards with fake Aadhaar details. The pattern involves creating accounts with minimal KYC and then gradually building credit history before maxing out credit lines.",
-      likes: 24,
-      comments: 8,
-    },
-    {
-      id: "post2",
-      title: "UPI Fraud Alert - QR Code Manipulation",
-      author: "HDFC Fraud Prevention",
-      date: "2025-04-03T14:15:00Z",
-      content:
-        "There's an increasing trend of QR code manipulation where fraudsters are overlaying legitimate merchant QR codes with their own. We've seen this particularly in high-traffic areas like railway stations and shopping malls. Customers should verify the merchant name before completing transactions.",
-      likes: 32,
-      comments: 12,
-    },
-    {
-      id: "post3",
-      title: "Card Skimming at ATMs in Mumbai",
-      author: "SBI Security",
-      date: "2025-04-05T09:45:00Z",
-      content:
-        "We've identified several ATMs in Mumbai with sophisticated skimming devices. These devices are nearly invisible and capture both card data and PIN. We recommend banks increase physical inspections of ATMs and customers to use contactless withdrawals where available.",
-      likes: 18,
-      comments: 6,
-    },
-  ]
+
+  useEffect(() => {
+    const checkWalletConnection = async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' })
+          if (accounts.length > 0) {
+            setWalletAddress(accounts[0])
+          }
+        } catch (error) {
+          console.error("Error checking wallet connection:", error)
+        }
+      }
+    }
+
+    checkWalletConnection()
+  }, [])
+
+  // Connect to MetaMask wallet
+  const handleConnectWallet = async () => {
+    if (!window.ethereum) {
+      alert("Please install MetaMask to connect your wallet")
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+      setWalletAddress(accounts[0])
+    } catch (error) {
+      console.error("Error connecting wallet:", error)
+      alert("Failed to connect wallet")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleScan = () => {
     setIsLoading(true)
@@ -109,29 +160,41 @@ export function IdentityVault() {
     })
   }
 
-  const handlePostSubmit = (e: React.FormEvent) => {
+  const handlePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!newPost.title || !newPost.content) {
-      toast({
-        variant: "destructive",
-        title: "Missing information",
-        description: "Please provide both a title and content for your post.",
-      })
+    
+    if (!walletAddress) {
+      alert("Please connect your wallet first")
       return
     }
 
-    setIsLoading(true)
+    try {
+      setIsLoading(true)
+      
+      // In a real app, you would send this to your backend/blockchain
+      // Here we're just simulating the process
+      const newPattern: ForumPost = {
+        id: Date.now().toString(),
+        title: newPost.title,
+        content: newPost.content,
+        author: `User ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`,
+        date: new Date().toISOString(),
+        likes: 0,
+      }
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      toast({
-        title: "Fraud pattern shared",
-        description: "Your fraud pattern has been securely shared with other banks.",
-      })
+      setForumPosts([newPattern, ...forumPosts])
       setNewPost({ title: "", content: "" })
-    }, 1500)
+      
+      // Simulate ZKP processing delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      alert("Fraud pattern shared successfully with ZKP protection")
+    } catch (error) {
+      console.error("Error sharing pattern:", error)
+      alert("Failed to share fraud pattern")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleGenerateKeys = () => {
@@ -158,33 +221,11 @@ export function IdentityVault() {
     }, 2000)
   }
 
-  const handleConnectWithBanks = () => {
-    toast({
-      title: "Bank connection initiated",
-      description: "Connection request sent to partner banks.",
-    })
-  }
-
-  const handleApplyPattern = (postId: string) => {
-    toast({
-      title: "Fraud pattern applied",
-      description: "The fraud pattern has been applied to your security settings.",
-    })
-  }
-
-  const handleComment = (postId: string) => {
-    toast({
-      title: "Comment feature",
-      description: "Comment functionality will be available in the next update.",
-    })
-  }
-
   return (
     <Tabs suppressHydrationWarning value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-      <TabsList className="grid grid-cols-3 w-full">
+      <TabsList className="grid grid-cols-2 w-full">
         <TabsTrigger value="security">Identity Security</TabsTrigger>
         <TabsTrigger value="forum">Fraud Pattern Forum</TabsTrigger>
-        <TabsTrigger value="logs">Blockchain Logs</TabsTrigger>
       </TabsList>
 
       <TabsContent value="security" className="space-y-6">
@@ -194,7 +235,7 @@ export function IdentityVault() {
           </div>
           <h2 className="text-xl font-semibold">Identity Security Score: {securityScore}%</h2>
           <Progress value={securityScore} className="w-full max-w-md" />
-          <p className="text-sm text-muted-foreground">Last scan: {new Date(lastScan).toLocaleString("en-IN")}</p>
+          <p suppressHydrationWarning className="text-sm text-muted-foreground">Last scan: {new Date(lastScan).toLocaleString("en-IN")}</p>
         </div>
 
         <Separator />
@@ -226,133 +267,99 @@ export function IdentityVault() {
             ))}
           </div>
         </div>
-
-        <Separator />
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Identity Protection</h3>
-
-          <div className="rounded-md border p-4 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800">
-            <div className="flex items-start">
-              <AlertTriangle className="mt-0.5 h-5 w-5 text-amber-600 dark:text-amber-400" />
-              <div className="ml-3">
-                <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300">Recommendation</h4>
-                <div className="mt-1 text-sm text-amber-700 dark:text-amber-400">
-                  <p>Enable Dark Web Monitoring for enhanced protection against credential theft.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col space-y-2">
-            <Button onClick={handleScan} disabled={isLoading}>
-              {isLoading ? "Scanning..." : "Scan for Compromised Credentials"}
-            </Button>
-            <Button variant="outline" onClick={handleGenerateKeys}>
-              <Key className="mr-2 h-4 w-4" />
-              Generate New Identity Keys
-            </Button>
-            <Button variant="outline" onClick={handleBackupIdentity}>
-              <Lock className="mr-2 h-4 w-4" />
-              Backup Identity to Secure Storage
-            </Button>
-          </div>
-        </div>
       </TabsContent>
 
       <TabsContent value="forum" className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">Fraud Pattern Repository</h3>
-          <Button size="sm" onClick={handleConnectWithBanks}>
-            <Users className="mr-2 h-4 w-4" />
-            Connect with Banks
+  <div className="flex items-center justify-between">
+    <h3 className="text-lg font-medium">Fraud Pattern Repository</h3>
+    <Button size="sm" onClick={handleConnectWallet}>
+      <Wallet className="mr-2 h-4 w-4" />
+      {walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : "Connect Wallet"}
+    </Button>
+  </div>
+
+  <Card>
+    <CardHeader>
+      <CardTitle>Share a Fraud Pattern</CardTitle>
+      <CardDescription>Share fraud patterns securely with other banks using Zero-Knowledge Proof</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <form onSubmit={handlePostSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="title" className="text-sm font-medium">
+            Title
+          </label>
+          <Input
+            id="title"
+            placeholder="Fraud pattern title"
+            value={newPost.title}
+            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="content" className="text-sm font-medium">
+            Description
+          </label>
+          <Textarea
+            id="content"
+            placeholder="Describe the fraud pattern in detail..."
+            rows={4}
+            value={newPost.content}
+            onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+            required
+          />
+          <p className="text-xs text-muted-foreground">
+            All sensitive data will be automatically anonymized using ZKP before sharing.
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <Button type="submit" disabled={isLoading || !walletAddress}>
+            {isLoading ? "Sharing..." : "Share Pattern"}
           </Button>
         </div>
+      </form>
+    </CardContent>
+  </Card>
 
-        <Card>
+  <div className="space-y-4">
+    <h3 className="text-lg font-medium">Recent Fraud Patterns</h3>
+
+    {forumPosts.length === 0 ? (
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <FileText className="h-10 w-10 text-muted-foreground mb-4" />
+        <h3 className="text-lg font-medium">No fraud patterns shared yet</h3>
+        <p className="text-sm text-muted-foreground mt-2 max-w-md">
+          Be the first to share a fraud pattern with the community.
+        </p>
+      </div>
+    ) : (
+      forumPosts.map((post) => (
+        <Card key={post.id}>
           <CardHeader>
-            <CardTitle>Share a Fraud Pattern</CardTitle>
-            <CardDescription>Share fraud patterns securely with other banks using Zero-Knowledge Proof</CardDescription>
+            <div className="flex items-start justify-between">
+              <div>
+                <CardTitle>{post.title}</CardTitle>
+                <CardDescription>
+                  Posted by {post.author} • {new Date(post.date).toLocaleDateString("en-IN")}
+                </CardDescription>
+              </div>
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="flex items-center">
+                  <FileText className="mr-1 h-4 w-4" />
+                  {post.likes}
+                </span>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handlePostSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="title" className="text-sm font-medium">
-                  Title
-                </label>
-                <Input
-                  id="title"
-                  placeholder="Fraud pattern title"
-                  value={newPost.title}
-                  onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="content" className="text-sm font-medium">
-                  Description
-                </label>
-                <Textarea
-                  id="content"
-                  placeholder="Describe the fraud pattern in detail..."
-                  rows={4}
-                  value={newPost.content}
-                  onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-                />
-                <p className="text-xs text-muted-foreground">
-                  All sensitive data will be automatically anonymized using ZKP before sharing.
-                </p>
-              </div>
-              <div className="flex justify-end">
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Sharing..." : "Share Pattern"}
-                </Button>
-              </div>
-            </form>
+            <p className="text-sm">{post.content}</p>
           </CardContent>
         </Card>
-
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Recent Fraud Patterns</h3>
-
-          {forumPosts.map((post) => (
-            <Card key={post.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle>{post.title}</CardTitle>
-                    <CardDescription>
-                      Posted by {post.author} • {new Date(post.date).toLocaleDateString("en-IN")}
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm">
-                    <span className="flex items-center">
-                      <FileText className="mr-1 h-4 w-4" />
-                      {post.likes}
-                    </span>
-                    <span className="flex items-center">
-                      <MessageSquare className="mr-1 h-4 w-4" />
-                      {post.comments}
-                    </span>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm">{post.content}</p>
-                <div className="mt-4 flex justify-end space-x-2">
-                  <Button variant="outline" size="sm" onClick={() => handleComment(post.id)}>
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Comment
-                  </Button>
-                  <Button size="sm" onClick={() => handleApplyPattern(post.id)}>
-                    <Shield className="mr-2 h-4 w-4" />
-                    Apply Pattern
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </TabsContent>
+      ))
+    )}
+  </div>
+</TabsContent>
 
       <TabsContent value="logs">
         <BlockchainLogs />

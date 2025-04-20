@@ -31,7 +31,7 @@ export default function IdentityVaultPage() {
         <Card>
           <CardHeader>
             <CardTitle>Credential Checker</CardTitle>
-            <CardDescription>Check if your credentials have been compromised in data breaches</CardDescription>
+            <CardDescription>Check if your user's credentials have been compromised in data breaches</CardDescription>
           </CardHeader>
           <CardContent>
             <CredentialChecker />

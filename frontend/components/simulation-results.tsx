@@ -203,26 +203,6 @@ export function SimulationResults() {
     }
   }, [])
 
-  const handleExportResults = () => {
-    toast({
-      title: "Exporting simulation results",
-      description: "Simulation results are being exported to PDF format.",
-    })
-  }
-
-  const handleSaveScenario = () => {
-    toast({
-      title: "Scenario saved",
-      description: "This fraud scenario has been saved to your library.",
-    })
-  }
-
-  const handleShareResults = () => {
-    toast({
-      title: "Results shared",
-      description: "Simulation results have been shared with your team.",
-    })
-  }
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -353,16 +333,6 @@ export function SimulationResults() {
             ))}
           </div>
         </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button variant="outline" size="sm" onClick={handleSaveScenario}>
-            <FileText className="mr-2 h-4 w-4" />
-            Save Scenario
-          </Button>
-          <Button size="sm" onClick={handleExportResults}>
-            Export Results
-          </Button>
-        </div>
       </TabsContent>
 
       <TabsContent value="fraudster" className="space-y-4">
@@ -487,15 +457,6 @@ export function SimulationResults() {
               </p>
             </div>
           </div>
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button variant="outline" size="sm" onClick={handleShareResults}>
-            Share Results
-          </Button>
-          <Button size="sm" onClick={handleExportResults}>
-            Export Report
-          </Button>
         </div>
       </TabsContent>
 
@@ -630,16 +591,6 @@ export function SimulationResults() {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <Button variant="outline" size="sm" onClick={handleSaveScenario}>
-            <FileText className="mr-2 h-4 w-4" />
-            Save Scenario
-          </Button>
-          <Button size="sm" onClick={handleExportResults}>
-            Export Results
-          </Button>
         </div>
       </TabsContent>
     </Tabs>

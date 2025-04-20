@@ -16,7 +16,7 @@ export function FraudSimulator() {
   const [isLoading, setIsLoading] = useState(false)
   const [scenario, setScenario] = useState({
     fraudType: "card_theft",
-    amount: 1000,
+    amount: 100000, // ₹1,00,000
     location: "foreign",
     deviceType: "new",
     timeOfDay: "night",
@@ -66,8 +66,16 @@ export function FraudSimulator() {
     }, 1500)
   }
 
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
+
   return (
-    <form  suppressHydrationWarning onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="fraudType">Fraud Type</Label>
         <Select value={scenario.fraudType} onValueChange={(value) => handleSelectChange("fraudType", value)}>
@@ -85,21 +93,21 @@ export function FraudSimulator() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="amount">Transaction Amount (USD)</Label>
+        <Label htmlFor="amount">Transaction Amount (INR)</Label>
         <div className="pt-5 pb-2">
           <Slider
             id="amount"
-            min={100}
-            max={10000}
-            step={100}
+            min={10000}
+            max={1000000}
+            step={10000}
             value={[scenario.amount]}
             onValueChange={handleAmountChange}
           />
         </div>
         <div className="flex justify-between text-sm">
-          <span>$100</span>
-          <span className="font-medium">${scenario.amount.toFixed(2)}</span>
-          <span>$10,000</span>
+          <span>₹10,000</span>
+          <span className="font-medium">{formatAmount(scenario.amount)}</span>
+          <span>₹10,00,000</span>
         </div>
       </div>
 
@@ -207,7 +215,7 @@ export function FraudSimulator() {
           onClick={() =>
             setScenario({
               fraudType: "card_theft",
-              amount: 1000,
+              amount: 100000,
               location: "foreign",
               deviceType: "new",
               timeOfDay: "night",
@@ -226,4 +234,3 @@ export function FraudSimulator() {
     </form>
   )
 }
-

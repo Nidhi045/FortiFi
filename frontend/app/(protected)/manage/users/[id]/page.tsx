@@ -269,18 +269,6 @@ export default async function UserDetailsPage({ params }: PageProps) {
             </div>
 
             <div className="flex flex-col space-y-2">
-              <Button variant="default">
-                <UserCog className="mr-2 h-4 w-4" />
-                Edit User Details
-              </Button>
-              <Button variant="outline">
-                <FileText className="mr-2 h-4 w-4" />
-                View KYC Documents
-              </Button>
-              <Button variant="outline">
-                <Bell className="mr-2 h-4 w-4" />
-                Send Notification
-              </Button>
               {user.riskScore < 60 && (
                 <Button variant="destructive">
                   <Ban className="mr-2 h-4 w-4" />
@@ -531,17 +519,6 @@ export default async function UserDetailsPage({ params }: PageProps) {
                                 <span>Consider for trusted customer program</span>
                               </li>
                             </ul>
-                          </div>
-
-                          <div className="flex flex-wrap gap-2 mt-4">
-                            <Button size="sm">
-                              <Shield className="mr-2 h-4 w-4" />
-                              Offer Premium Features
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <FileText className="mr-2 h-4 w-4" />
-                              Schedule Review
-                            </Button>
                           </div>
                         </>
                       )}

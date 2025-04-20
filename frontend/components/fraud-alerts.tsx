@@ -4,9 +4,9 @@ import { useState } from "react"
 import { AlertCircle, AlertTriangle, ExternalLink, Filter, MapPin, User, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Link from "next/link"
 
 // Sample fraud alerts data - updated with 2025 dates
 const allAlerts = [
@@ -133,7 +133,7 @@ export function FraudAlerts({ userId }: FraudAlertsProps) {
   )
 
   return (
-    <div suppressHydrationWarning className="space-y-4">
+    <div className="space-y-4">
       {!userId && (
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div>
@@ -157,7 +157,7 @@ export function FraudAlerts({ userId }: FraudAlertsProps) {
       )}
 
       {viewMode === "aggregated" ? (
-        <Tabs suppressHydrationWarning defaultValue="region" className="space-y-4">
+        <Tabs defaultValue="region" className="space-y-4">
           <TabsList>
             <TabsTrigger value="region">By Region</TabsTrigger>
             <TabsTrigger value="type">By Type</TabsTrigger>
@@ -165,132 +165,146 @@ export function FraudAlerts({ userId }: FraudAlertsProps) {
           </TabsList>
 
           <TabsContent value="region" className="space-y-4">
-            {Object.entries(alertsByRegion).map(([region, regionAlerts]) => (
-              <div key={region} className="rounded-lg border p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <MapPin className="mr-2 h-5 w-5 text-muted-foreground" />
-                    <h4 className="text-lg font-medium">{region}</h4>
-                  </div>
-                  <Badge>{regionAlerts.length} alerts</Badge>
-                </div>
-
-                <div className="mt-4 space-y-3">
-                  {regionAlerts.slice(0, 3).map((alert) => (
-                    <div key={alert.id} className="flex items-start">
-                      {alert.severity === "high" ? (
-                        <AlertCircle className="mt-0.5 h-4 w-4 text-rose-600 dark:text-rose-400" />
-                      ) : (
-                        <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-600 dark:text-amber-400" />
-                      )}
-                      <div className="ml-2">
-                        <div className="flex items-center">
-                          <span className="text-sm font-medium">{alert.title}</span>
-                          <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
-                        </div>
-                        <p suppressHydrationWarning className="text-xs text-muted-foreground">{new Date(alert.date).toLocaleDateString()}</p>
-                      </div>
+            <div className="max-h-[400px] overflow-y-auto pr-1">
+              {Object.entries(alertsByRegion).map(([region, regionAlerts]) => (
+                <div key={region} className="rounded-lg border p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <MapPin className="mr-2 h-5 w-5 text-muted-foreground" />
+                      <h4 className="text-lg font-medium">{region}</h4>
                     </div>
-                  ))}
+                    <Badge>{regionAlerts.length} alerts</Badge>
+                  </div>
 
-                  {regionAlerts.length > 3 && (
-                    <Button variant="link" size="sm" className="p-0 h-auto">
-                      View {regionAlerts.length - 3} more alerts
-                    </Button>
-                  )}
+                  <div className="mt-4 space-y-3">
+                    {regionAlerts.slice(0, 3).map((alert) => (
+                      <div key={alert.id} className="flex items-start">
+                        {alert.severity === "high" ? (
+                          <AlertCircle className="mt-0.5 h-4 w-4 text-rose-600 dark:text-rose-400" />
+                        ) : (
+                          <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-600 dark:text-amber-400" />
+                        )}
+                        <div className="ml-2">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium">{alert.title}</span>
+                            <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(alert.date).toLocaleDateString("en-IN")}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+
+                    {regionAlerts.length > 3 && (
+                      <Button variant="link" size="sm" className="p-0 h-auto">
+                        View {regionAlerts.length - 3} more alerts
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </TabsContent>
 
           <TabsContent value="type" className="space-y-4">
-            {Object.entries(alertsByType).map(([type, typeAlerts]) => (
-              <div key={type} className="rounded-lg border p-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-lg font-medium">{type} Alerts</h4>
-                  <Badge>{typeAlerts.length} alerts</Badge>
-                </div>
+            <div className="max-h-[400px] overflow-y-auto pr-1">
+              {Object.entries(alertsByType).map(([type, typeAlerts]) => (
+                <div key={type} className="rounded-lg border p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-lg font-medium">{type} Alerts</h4>
+                    <Badge>{typeAlerts.length} alerts</Badge>
+                  </div>
 
-                <div className="mt-4 space-y-3">
-                  {typeAlerts.slice(0, 3).map((alert) => (
-                    <div key={alert.id} className="flex items-start">
-                      {alert.severity === "high" ? (
-                        <AlertCircle className="mt-0.5 h-4 w-4 text-rose-600 dark:text-rose-400" />
-                      ) : (
-                        <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-600 dark:text-amber-400" />
-                      )}
-                      <div className="ml-2">
-                        <div className="flex items-center">
-                          <span className="text-sm font-medium">{alert.title}</span>
-                          <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
+                  <div className="mt-4 space-y-3">
+                    {typeAlerts.slice(0, 3).map((alert) => (
+                      <div key={alert.id} className="flex items-start">
+                        {alert.severity === "high" ? (
+                          <AlertCircle className="mt-0.5 h-4 w-4 text-rose-600 dark:text-rose-400" />
+                        ) : (
+                          <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-600 dark:text-amber-400" />
+                        )}
+                        <div className="ml-2">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium">{alert.title}</span>
+                            <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(alert.date).toLocaleDateString("en-IN")}
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{new Date(alert.date).toLocaleDateString()}</p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
 
-                  {typeAlerts.length > 3 && (
-                    <Button variant="link" size="sm" className="p-0 h-auto">
-                      View {typeAlerts.length - 3} more alerts
-                    </Button>
-                  )}
+                    {typeAlerts.length > 3 && (
+                      <Button variant="link" size="sm" className="p-0 h-auto">
+                        View {typeAlerts.length - 3} more alerts
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </TabsContent>
 
           <TabsContent value="severity" className="space-y-4">
-            <div className="rounded-lg border p-4 bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800">
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-medium text-rose-800 dark:text-rose-300">High Severity</h4>
-                <Badge className="bg-rose-500">
-                  {filteredAlerts.filter((a) => a.severity === "high").length} alerts
-                </Badge>
-              </div>
+            <div className="max-h-[400px] overflow-y-auto pr-1">
+              <div className="rounded-lg border p-4 bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800 mb-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-medium text-rose-800 dark:text-rose-300">High Severity</h4>
+                  <Badge className="bg-rose-500">
+                    {filteredAlerts.filter((a) => a.severity === "high").length} alerts
+                  </Badge>
+                </div>
 
-              <div className="mt-4 space-y-3">
-                {filteredAlerts
-                  .filter((a) => a.severity === "high")
-                  .slice(0, 3)
-                  .map((alert) => (
-                    <div key={alert.id} className="flex items-start">
-                      <AlertCircle className="mt-0.5 h-4 w-4 text-rose-600 dark:text-rose-400" />
-                      <div className="ml-2">
-                        <div className="flex items-center">
-                          <span className="text-sm font-medium">{alert.title}</span>
-                          <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
+                <div className="mt-4 space-y-3">
+                  {filteredAlerts
+                    .filter((a) => a.severity === "high")
+                    .slice(0, 3)
+                    .map((alert) => (
+                      <div key={alert.id} className="flex items-start">
+                        <AlertCircle className="mt-0.5 h-4 w-4 text-rose-600 dark:text-rose-400" />
+                        <div className="ml-2">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium">{alert.title}</span>
+                            <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(alert.date).toLocaleDateString("en-IN")}
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{new Date(alert.date).toLocaleDateString()}</p>
                       </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-
-            <div className="rounded-lg border p-4 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800">
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-medium text-amber-800 dark:text-amber-300">Medium Severity</h4>
-                <Badge className="bg-amber-500">
-                  {filteredAlerts.filter((a) => a.severity === "medium").length} alerts
-                </Badge>
+                    ))}
+                </div>
               </div>
 
-              <div className="mt-4 space-y-3">
-                {filteredAlerts
-                  .filter((a) => a.severity === "medium")
-                  .slice(0, 3)
-                  .map((alert) => (
-                    <div key={alert.id} className="flex items-start">
-                      <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-600 dark:text-amber-400" />
-                      <div className="ml-2">
-                        <div className="flex items-center">
-                          <span className="text-sm font-medium">{alert.title}</span>
-                          <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
+              <div className="rounded-lg border p-4 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-medium text-amber-800 dark:text-amber-300">Medium Severity</h4>
+                  <Badge className="bg-amber-500">
+                    {filteredAlerts.filter((a) => a.severity === "medium").length} alerts
+                  </Badge>
+                </div>
+
+                <div className="mt-4 space-y-3">
+                  {filteredAlerts
+                    .filter((a) => a.severity === "medium")
+                    .slice(0, 3)
+                    .map((alert) => (
+                      <div key={alert.id} className="flex items-start">
+                        <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-600 dark:text-amber-400" />
+                        <div className="ml-2">
+                          <div className="flex items-center">
+                            <span className="text-sm font-medium">{alert.title}</span>
+                            <span className="ml-2 text-xs text-muted-foreground">({alert.userName})</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(alert.date).toLocaleDateString("en-IN")}
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground">{new Date(alert.date).toLocaleDateString()}</p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -334,98 +348,100 @@ export function FraudAlerts({ userId }: FraudAlertsProps) {
             </div>
           )}
 
-          {filteredAlerts.length > 0 ? (
-            filteredAlerts.map((alert) => (
-              <div
-                key={alert.id}
-                className={`rounded-lg border p-4 ${
-                  alert.severity === "high"
-                    ? "border-rose-200 bg-rose-50 dark:border-rose-800 dark:bg-rose-950/50"
-                    : "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50"
-                }`}
-              >
-                <div className="flex items-start">
-                  {alert.severity === "high" ? (
-                    <AlertCircle className="mt-0.5 h-5 w-5 text-rose-600 dark:text-rose-400" />
-                  ) : (
-                    <AlertTriangle className="mt-0.5 h-5 w-5 text-amber-600 dark:text-amber-400" />
-                  )}
-                  <div className="ml-3 flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3
-                        className={`text-sm font-medium ${
+          <div className="max-h-[400px] overflow-y-auto pr-1">
+            {filteredAlerts.length > 0 ? (
+              filteredAlerts.map((alert) => (
+                <div
+                  key={alert.id}
+                  className={`rounded-lg border p-4 mb-3 ${
+                    alert.severity === "high"
+                      ? "border-rose-200 bg-rose-50 dark:border-rose-800 dark:bg-rose-950/50"
+                      : "border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50"
+                  }`}
+                >
+                  <div className="flex items-start">
+                    {alert.severity === "high" ? (
+                      <AlertCircle className="mt-0.5 h-5 w-5 text-rose-600 dark:text-rose-400" />
+                    ) : (
+                      <AlertTriangle className="mt-0.5 h-5 w-5 text-amber-600 dark:text-amber-400" />
+                    )}
+                    <div className="ml-3 flex-1">
+                      <div className="flex items-center justify-between">
+                        <h3
+                          className={`text-sm font-medium ${
+                            alert.severity === "high"
+                              ? "text-rose-800 dark:text-rose-300"
+                              : "text-amber-800 dark:text-amber-300"
+                          }`}
+                        >
+                          {alert.title}
+                        </h3>
+                        <Badge
+                          variant="outline"
+                          className={
+                            alert.severity === "high"
+                              ? "border-rose-300 bg-rose-100 text-rose-800 dark:border-rose-700 dark:bg-rose-900 dark:text-rose-300"
+                              : "border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-300"
+                          }
+                        >
+                          {alert.severity}
+                        </Badge>
+                      </div>
+                      <div
+                        className={`mt-1 text-sm ${
                           alert.severity === "high"
-                            ? "text-rose-800 dark:text-rose-300"
-                            : "text-amber-800 dark:text-amber-300"
+                            ? "text-rose-700 dark:text-rose-400"
+                            : "text-amber-700 dark:text-amber-400"
                         }`}
                       >
-                        {alert.title}
-                      </h3>
-                      <Badge
-                        variant="outline"
-                        className={
-                          alert.severity === "high"
-                            ? "border-rose-300 bg-rose-100 text-rose-800 dark:border-rose-700 dark:bg-rose-900 dark:text-rose-300"
-                            : "border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-300"
-                        }
-                      >
-                        {alert.severity}
-                      </Badge>
-                    </div>
-                    <div
-                      className={`mt-1 text-sm ${
-                        alert.severity === "high"
-                          ? "text-rose-700 dark:text-rose-400"
-                          : "text-amber-700 dark:text-amber-400"
-                      }`}
-                    >
-                      <p>{alert.description}</p>
-                      <div className="mt-1 flex items-center text-xs space-x-2">
-                        {!userId && (
+                        <p>{alert.description}</p>
+                        <div className="mt-1 flex items-center text-xs space-x-2">
+                          {!userId && (
+                            <div className="flex items-center">
+                              <User className="mr-1 h-3 w-3" />
+                              <span>{alert.userName}</span>
+                            </div>
+                          )}
                           <div className="flex items-center">
-                            <User className="mr-1 h-3 w-3" />
-                            <span>{alert.userName}</span>
+                            <Calendar className="mr-1 h-3 w-3" />
+                            <span>{new Date(alert.date).toLocaleDateString("en-IN")}</span>
                           </div>
-                        )}
-                        <div className="flex items-center">
-                          <Calendar className="mr-1 h-3 w-3" />
-                          <span>{new Date(alert.date).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <MapPin className="mr-1 h-3 w-3" />
-                          <span>{alert.region}</span>
+                          <div className="flex items-center">
+                            <MapPin className="mr-1 h-3 w-3" />
+                            <span>{alert.region}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="mt-2">
-                      <Button
-                        size="sm"
-                        className={
-                          alert.severity === "high"
-                            ? "border-rose-300 bg-rose-100 text-rose-800 hover:bg-rose-200 dark:border-rose-700 dark:bg-rose-900 dark:text-rose-300 dark:hover:bg-rose-800"
-                            : "border-amber-300 bg-amber-100 text-amber-800 hover:bg-amber-200 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-300 dark:hover:bg-amber-800"
-                        }
-                      >
-                        Review Alert
-                      </Button>
+                      <div className="mt-2">
+                        <Button
+                          size="sm"
+                          className={
+                            alert.severity === "high"
+                              ? "border-rose-300 bg-rose-100 text-rose-800 hover:bg-rose-200 dark:border-rose-700 dark:bg-rose-900 dark:text-rose-300 dark:hover:bg-rose-800"
+                              : "border-amber-300 bg-amber-100 text-amber-800 hover:bg-amber-200 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-300 dark:hover:bg-amber-800"
+                          }
+                        >
+                          Review Alert
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center py-6 text-muted-foreground">
+                <p>No fraud alerts at this time.</p>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-6 text-muted-foreground">
-              <p>No fraud alerts at this time.</p>
-            </div>
-          )}
+            )}
+          </div>
         </>
       )}
 
       <Link href="/transactions?filter=alerts">
-        <Button variant="outline" size="sm" className="w-full">
-          <ExternalLink className="mr-2 h-4 w-4" />
-          View All Alerts
-        </Button>
+      <Button variant="outline" size="sm" className="w-full">
+        <ExternalLink className="mr-2 h-4 w-4" />
+        View All Alerts
+      </Button>
       </Link>
     </div>
   )

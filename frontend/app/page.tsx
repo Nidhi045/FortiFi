@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { useTheme } from "next-themes"
 import Link from "next/link"
 import Image from "next/image"
 import {
@@ -25,7 +26,8 @@ import {
   Copy,
   ChevronLeft,
   ChevronRight,
-  Fingerprint
+  Fingerprint,
+  User
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -333,30 +335,161 @@ function BinaryBackground() {
   );
 }
 
+// Sign-in Choice Popup Component
+function SignInChoicePopup({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50" onClick={onClose}>
+      <div 
+        className="absolute inset-0 bg-[#010413]/70 backdrop-blur-md"
+        style={{animation: 'fadeIn 0.3s ease-out'}}
+        aria-hidden="true"
+      />
+      
+      <div 
+        className="relative z-10 w-full max-w-md p-6 rounded-xl overflow-hidden bg-[#010413]/40 border border-[#00C3FF]/20 backdrop-blur-xl shadow-xl animate-fadeIn cyber-glow"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Animated grid */}
+          <div className="absolute inset-0 opacity-5" style={{
+            backgroundImage: `linear-gradient(#00C3FF 1px, transparent 1px), linear-gradient(to right, #00C3FF 1px, transparent 1px)`,
+            backgroundSize: `40px 40px`,
+            animation: 'gridPan 20s linear infinite',
+          }}></div>
+          
+          {/* Animated circles */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            {[...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute border border-[#00C3FF]/20 rounded-full animate-pulse-slow"
+                style={{
+                  width: `${100 + i * 100}px`,
+                  height: `${100 + i * 100}px`,
+                  animationDelay: `${i * 0.5}s`,
+                }}
+              />
+            ))}
+          </div>
+          
+
+          
+          {/* Subtle glow */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#00C3FF]/5 to-transparent opacity-20"></div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10">
+        
+
+
+          {/* Logo */}
+          <div className="flex justify-center mb-6 cyber-logo">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-[#00C3FF]/10 blur-md animate-pulse-slow"></div>
+              <Image src="/logo.png" alt="Fortifi Logo" width={90} height={90} className="relative z-10" />
+            </div>
+          </div>
+          
+          {/* Title with terminal effect */}
+          <div className="text-center mb-1">
+            <div className="inline-flex items-center bg-[#00C3FF]/10 px-3 py-1 rounded-full mb-3 border border-[#00C3FF]/20">
+              
+              <span className="text-[#00C3FF] text-xs font-mono">system.auth_v1.0</span>
+            </div>
+            <h2 className="text-3xl font-bold text-center mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white to-[#A0DFFF]">
+              Choose Sign In Method
+            </h2>
+          </div>
+          
+          <p className="text-[#00C3FF] text-center mb-8 font-mono">
+            <span className="text-white/70">$</span> select access_portal --secure
+          </p>
+          
+          {/* Options */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Link 
+              href="/login-banker" 
+              className="group flex flex-col items-center p-6 rounded-lg border border-[#00C3FF]/30 bg-[#010413]/60 hover:bg-[#00C3FF]/10 hover:border-[#00C3FF]/60"
+            >
+              <div className="relative mb-4">
+                <div className="absolute inset-0 bg-[#00C3FF]/20 rounded-full blur-md group-hover:blur-lg transition-all duration-300"></div>
+                <Building2 className="h-12 w-12 text-[#00C3FF] relative z-10 group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="text-l font-bold text-white mb-1 group-hover:text-[#00C3FF] transition-colors">Banker Sign In</h3>
+              <p className="text-sm text-[#A0DFFF] text-center">For bank staff and administrators</p>
+              <div className="mt-3 w-0 group-hover:w-full h-px bg-gradient-to-r from-transparent via-[#00C3FF] to-transparent transition-all duration-700"></div>
+            </Link>
+            
+            <Link 
+              href="/login-customer" 
+              className="group flex flex-col items-center p-6 rounded-lg border border-[#00C3FF]/30 bg-[#010413]/60 hover:bg-[#00C3FF]/10 hover:border-[#00C3FF]/60"
+            >
+              <div className="relative mb-4">
+                <div className="absolute inset-0 bg-[#00C3FF]/20 rounded-full blur-md group-hover:blur-lg transition-all duration-300"></div>
+                <User className="h-12 w-12 text-[#00C3FF] relative z-10 group-hover:scale-110 transition-transform" />
+              </div>
+              <h3 className="text-l font-bold text-white mb-1 group-hover:text-[#00C3FF] transition-colors">Customer Sign In</h3>
+              <p className="text-sm text-[#A0DFFF] text-center">For account holders and clients</p>
+              <div className="mt-3 w-0 group-hover:w-full h-px bg-gradient-to-r from-transparent via-[#00C3FF] to-transparent transition-all duration-700"></div>
+            </Link>
+          </div>
+          
+          {/* Security indicators */}
+          <div className="mt-8 flex items-center justify-center space-x-4 text-sm text-[#A0DFFF]">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+              <span>Secure Connection</span>
+            </div>
+            <div className="h-4 w-px bg-[#00C3FF]/20"></div>
+            <div className="flex items-center space-x-2">
+              <Lock className="h-4 w-4 text-[#00C3FF]" />
+              <span>End-to-End Encrypted</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
+  const { setTheme } = useTheme()
+  const [showSignInPopup, setShowSignInPopup] = useState(false)
+
+  useEffect(() => {
+    // Set dark theme when page loads
+    setTheme('dark')
+  }, [setTheme])
+
   return (
     <div suppressHydrationWarning className="w-full min-h-screen bg-[#010413] text-[#E0E0E0] font-sans antialiased relative overflow-x-hidden">
       {/* Animated Background Grid */}
       <AnimatedGridBackground />
 
-
       {/* Main Content Container - Remove Header */}
       <div className="relative z-10 max-w-[1920px] mx-auto">
         <main>
-          <Hero />
+          <Hero onSignInClick={() => setShowSignInPopup(true)} />
           <Features />
           <SecurityProtocol />
           <Team />
-          <CTA />
+          <CTA onSignInClick={() => setShowSignInPopup(true)} />
         </main>
         <Footer />
       </div>
+      
+      {/* Sign In Choice Popup */}
+      <SignInChoicePopup isOpen={showSignInPopup} onClose={() => setShowSignInPopup(false)} />
     </div>
   )
 }
 
 // Hero Section Component - Enhanced with Particles & Blocks
-function Hero() {
+function Hero({ onSignInClick }: { onSignInClick: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -507,22 +640,20 @@ function Hero() {
           <Button
             size="lg"
             className="bg-[#00C3FF] text-[#010413] hover:bg-white font-bold px-8 py-3 rounded transition-colors group text-base shadow-lg hover:shadow-[#00C3FF]/30"
-            asChild
+            onClick={onSignInClick}
           >
-            <Link href="/login">
-              Authenticate <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Link>
-            </Button>
-            <Button
+            Authenticate <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </Button>
+          <Button
             size="lg"
             variant="outline"
             className="text-white border-[#00C3FF]/30 hover:border-[#00C3FF] hover:bg-[#00C3FF]/10 font-medium px-8 py-3 rounded transition-colors group text-base backdrop-blur-sm"
-              asChild
-            >
-              <Link href="#features">
+            asChild
+          >
+            <Link href="#features">
               Load Modules <span className="ml-1.5 font-mono opacity-50 group-hover:opacity-100 transition-opacity">[↓]</span>
-              </Link>
-            </Button>
+            </Link>
+          </Button>
         </div>
       </div>
     </section>
@@ -918,7 +1049,7 @@ function Team() {
 }
 
 // CTA Section Component - Enhanced
-function CTA() {
+function CTA({ onSignInClick }: { onSignInClick: () => void }) {
   return (
     <section suppressHydrationWarning className="py-20 md:py-24 px-6 relative overflow-hidden">
       {/* Background with enhanced texture */}
@@ -948,12 +1079,10 @@ function CTA() {
         <Button
           size="lg"
           className="bg-[#00C3FF] text-[#010413] hover:bg-white font-bold px-10 py-3 rounded transition-colors group text-base shadow-lg hover:shadow-[#00C3FF]/40"
-          asChild
+          onClick={onSignInClick}
         >
-          <Link href="/login">
-            Demo <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-          </Link>
-            </Button>
+          Demo <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+        </Button>
       </div>
     </section>
   )
@@ -978,8 +1107,8 @@ function Footer() {
             <Image 
               src="/logo.png" 
               alt="FortiFi Logo" 
-              width={80} 
-              height={80} 
+              width={120} 
+              height={120} 
               className="opacity-80 hover:opacity-100 transition-opacity"
             />
                   </Link>

@@ -58,18 +58,18 @@ export function FraudAnalysis() {
     let totalRisk = 0
 
     // Amount factor
-    if (data.amount > 5000) {
+    if (data.amount > 500000) {
       factors.push({
         name: "High Transaction Amount",
-        description: "Transactions over $5,000 have higher fraud risk",
+        description: "Transactions over ₹5,00,000 have higher fraud risk",
         impact: "high",
         score: 30,
       })
       totalRisk += 30
-    } else if (data.amount > 1000) {
+    } else if (data.amount > 100000) {
       factors.push({
         name: "Medium Transaction Amount",
-        description: "Transactions over $1,000 have moderate fraud risk",
+        description: "Transactions over ₹1,00,000 have moderate fraud risk",
         impact: "medium",
         score: 15,
       })
@@ -96,7 +96,7 @@ export function FraudAnalysis() {
         score: 30,
       })
       totalRisk += 30
-    } else if (data.country !== "US" && data.country !== "UK" && data.country !== "CA" && data.country !== "AU") {
+    } else if (data.country !== "IN") {
       factors.push({
         name: "International Transaction",
         description: "Cross-border transactions have increased risk",
@@ -237,7 +237,7 @@ export function FraudAnalysis() {
             <h4 className="text-sm font-medium">Transaction Details</h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div className="text-muted-foreground">Amount:</div>
-              <div>${transaction.amount.toFixed(2)}</div>
+              <div>₹{transaction.amount.toLocaleString("en-IN")}</div>
 
               <div className="text-muted-foreground">Merchant:</div>
               <div>{transaction.merchant || "Unknown Merchant"}</div>
@@ -276,8 +276,8 @@ export function FraudAnalysis() {
                             factor.impact === "high"
                               ? "text-rose-500"
                               : factor.impact === "medium"
-                                ? "text-amber-500"
-                                : "text-emerald-500"
+                              ? "text-amber-500"
+                              : "text-emerald-500"
                           }
                         >
                           +{factor.score} risk points
@@ -289,23 +289,8 @@ export function FraudAnalysis() {
               </div>
             ))}
           </div>
-
-          <div className="flex justify-between pt-2">
-            <Button variant="outline" size="sm">
-              Save Analysis
-            </Button>
-            <div className="space-x-2">
-              <Button variant="outline" size="sm">
-                Flag as Fraud
-              </Button>
-              <Button size="sm">
-                Approve <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
-          </div>
         </>
       )}
     </div>
   )
 }
-

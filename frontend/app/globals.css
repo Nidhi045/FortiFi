@@ -4,13 +4,25 @@
 
 @layer base {
   :root {
+    /* Indian Bank Portal Colors */
+    --indian-bank-primary: 221 59% 35%;
+    --indian-bank-accent: 45 100% 50%;
+    --indian-bank-background: 0 0% 100%;
+    --indian-bank-foreground: 222.2 84% 4.9%;
+    --indian-bank-card: 0 0% 100%;
+    --indian-bank-card-foreground: 222.2 84% 4.9%;
+    --indian-bank-border: 214.3 31.8% 91.4%;
+    --indian-bank-input: 214.3 31.8% 91.4%;
+    --indian-bank-ring: 221 59% 35%;
+    
+    /* Existing Dashboard Colors */
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 221.2 83.2% 53.3%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221 59% 35%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -22,7 +34,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 221 59% 35%;
     --radius: 0.5rem;
 
     --sidebar-background: 222 47% 11%;
@@ -36,12 +48,12 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
     --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
@@ -576,4 +588,99 @@
   margin-left: auto;
   margin-right: auto;
   width: 100%;
+}
+
+/* Animation for the sign-in popup */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
+}
+
+/* For the grid animation in popup */
+@keyframes gridPan {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+/* Indian Bank Portal Specific Styles */
+.indian-bank-theme {
+  --background: var(--indian-bank-background);
+  --foreground: var(--indian-bank-foreground);
+  --card: var(--indian-bank-card);
+  --card-foreground: var(--indian-bank-card-foreground);
+  --primary: var(--indian-bank-primary);
+  --accent: var(--indian-bank-accent);
+  --border: var(--indian-bank-border);
+  --input: var(--indian-bank-input);
+  --ring: var(--indian-bank-ring);
+}
+
+/* Login Page Specific Styles */
+.login-page {
+  @apply min-h-screen flex items-center justify-center bg-gradient-to-b from-[#1C3E94] to-[#0c2052];
+}
+
+.login-container {
+  @apply w-full max-w-md p-4;
+}
+
+.login-card {
+  @apply bg-white rounded-lg shadow-lg overflow-hidden;
+}
+
+.login-header {
+  @apply bg-[#1C3E94] text-white p-6;
+}
+
+.login-content {
+  @apply p-6;
+}
+
+.login-footer {
+  @apply p-4 bg-gray-50 text-center text-sm text-gray-500;
 }

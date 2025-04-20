@@ -600,22 +600,12 @@ export function UserDetails({ userId }: { userId: string }) {
                           </div>
                           <h3 className="text-sm font-medium">No Active Loans</h3>
                           <p className="text-xs text-muted-foreground mt-1">This user doesn't have any active loans</p>
-                          <Button size="sm" className="mt-4">
-                            Offer Loan
-                          </Button>
                         </div>
                       )}
                     </CardContent>
                   </Card>
                 </div>
               )}
-
-              <div className="flex justify-end">
-                <Button>
-                  <DollarSign className="mr-2 h-4 w-4" />
-                  Create Loan Offer
-                </Button>
-              </div>
             </TabsContent>
           </Tabs>
         </Card>
