@@ -37,6 +37,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/indian-bank/components/ui/breadcrumb"
+import { useAuth } from "@/lib/auth-context"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -46,6 +47,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { theme, setTheme } = useTheme()
+  const { authState, setAuthState } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
   const [notificationsOpen, setNotificationsOpen] = useState(false)
@@ -53,12 +55,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [helpOpen, setHelpOpen] = useState(false)
 
   useEffect(() => {
+    // Redirect to login if not authenticated
+    if (!authState.isAuthenticated) {
+      router.push("/login-customer")
+      return
+    }
+
     const timer = setInterval(() => {
       setCurrentTime(new Date())
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [])
+  }, [authState.isAuthenticated, router])
 
   const formatTime = () => {
     return currentTime.toLocaleTimeString("en-IN", {
@@ -78,7 +86,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   const handleLogout = () => {
-    router.push("/")
+    setAuthState({
+      isAuthenticated: false,
+      accountType: null,
+      accountDetails: null
+    })
+    router.push("/login-customer")
   }
 
   const toggleTheme = () => {
@@ -113,6 +126,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const breadcrumbs = generateBreadcrumbs()
 
+  // If not authenticated, don't render anything
+  if (!authState.isAuthenticated) {
+    return null
+  }
+
   return (
     <div className="w-full flex min-h-screen flex-col">
       {/* Header */}
@@ -137,7 +155,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex items-center space-x-4">
           
           <div className="hidden md:block">
-            <span className="text-l  text-white">Welcome, <span className="text-l font-bold text-yellow-500">Rahul Sharma</span></span>
+            <span className="text-l  text-white">Welcome, <span className="text-l font-bold text-yellow-500">{authState.accountDetails?.name || "User"}</span></span>
           </div>
 
           <div className="hidden md:block text-right">

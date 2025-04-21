@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/indian-bank/components/ui/button"
@@ -10,28 +9,51 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/indian-bank/components/ui/label"
 import { AlertCircle, Lock } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/indian-bank/components/ui/alert"
+import { useAuth } from "@/lib/auth-context"
+import { realAccountData, phantomAccountData } from "@/lib/account-data"
 
 export function LoginForm() {
   const router = useRouter()
-  const [username, setUsername] = useState("")
+  const { setAuthState } = useAuth()
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
-    // Simulate login validation
-    setTimeout(() => {
-      if (username && password) {
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    // Check credentials
+    if (email === "rahulsharma@gmail.com") {
+      if (password === "Rah2005!@#") {
+        // Real account login
+        setAuthState({
+          isAuthenticated: true,
+          accountType: "real",
+          accountDetails: realAccountData.accountDetails
+        })
         router.push("/ib-netbanking/dashboard")
+      } else if (password === "Simpsonsiitm") {
+        // Phantom account login - using same dashboard but with different data
+        setAuthState({
+          isAuthenticated: true,
+          accountType: "phantom",
+          accountDetails: phantomAccountData.accountDetails
+        })
+        router.push("/ib-netbanking/dashboard") // Same route as real account
       } else {
-        setError("Please enter both Customer ID and Password")
+        setError("Invalid credentials. Please try again.")
       }
-      setLoading(false)
-    }, 1500)
+    } else {
+      setError("Invalid credentials. Please try again.")
+    }
+
+    setLoading(false)
   }
 
   return (
@@ -51,12 +73,14 @@ export function LoginForm() {
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="username">Customer ID</Label>
+              <Label htmlFor="email">Email ID</Label>
               <Input
-                id="username"
-                placeholder="Enter your Customer ID"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="Enter your Email ID"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
               />
             </div>
             <div className="grid gap-2">
@@ -67,6 +91,7 @@ export function LoginForm() {
                 placeholder="Enter your Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
             <Button
@@ -84,7 +109,7 @@ export function LoginForm() {
           <Lock className="h-4 w-4 mr-1" />
           <span>256-bit encrypted connection</span>
         </div>
-        <div className="text-xs">Last system update: April 15, 2025 | Version 3.2.1</div>
+        <div className="text-xs">Last system update: {new Date().toLocaleDateString('en-IN')} | Version 3.2.1</div>
       </CardFooter>
     </Card>
   )

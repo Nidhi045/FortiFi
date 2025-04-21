@@ -1,22 +1,50 @@
-"use client"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/indian-bank/components/ui/card"
 import { Badge } from "@/components/indian-bank/components/ui/badge"
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react"
-import { useAccount } from "@/components/indian-bank/context/account-context"
 
 export function TransactionQuickSummary() {
-  const { getRecentTransactions } = useAccount()
-  const transactions = getRecentTransactions()
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount)
-  }
+  const transactions = [
+    {
+      id: 1,
+      description: "UPI Payment to Priya Patel",
+      amount: "₹2,500.00",
+      date: "April 19, 2025",
+      time: "09:15 AM",
+      type: "debit",
+    },
+    {
+      id: 2,
+      description: "Salary Credit - TechSolutions India Pvt Ltd",
+      amount: "₹45,000.00",
+      date: "April 15, 2025",
+      time: "10:30 AM",
+      type: "credit",
+    },
+    {
+      id: 3,
+      description: "ATM Withdrawal - Andheri Branch",
+      amount: "₹10,000.00",
+      date: "April 12, 2025",
+      time: "03:45 PM",
+      type: "debit",
+    },
+    {
+      id: 4,
+      description: "Electricity Bill - Tata Power",
+      amount: "₹1,450.00",
+      date: "April 10, 2025",
+      time: "11:20 AM",
+      type: "debit",
+    },
+    {
+      id: 5,
+      description: "UPI Payment from Vikram Singh",
+      amount: "₹5,000.00",
+      date: "April 05, 2025",
+      time: "02:30 PM",
+      type: "credit",
+    },
+  ]
 
   return (
     <Card>
@@ -46,7 +74,7 @@ export function TransactionQuickSummary() {
               <div className="text-right">
                 <p className={`font-semibold ${transaction.type === "credit" ? "text-green-600" : "text-red-600"}`}>
                   {transaction.type === "credit" ? "+" : "-"}
-                  {formatCurrency(transaction.amount)}
+                  {transaction.amount}
                 </p>
                 <Badge variant={transaction.type === "credit" ? "outline" : "secondary"} className="mt-1">
                   {transaction.type === "credit" ? "Received" : "Paid"}

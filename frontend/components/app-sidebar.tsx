@@ -321,8 +321,8 @@ export function AppSidebar() {
               <AvatarFallback>MS</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="font-medium text-sm">Mahesh Singh</span>
-              <span className="text-xs text-muted-foreground">maheshsingh@indianbank.com</span>
+              <span className="font-medium text-sm">Vidhya K</span>
+              <span className="text-xs text-muted-foreground">vidhyak@indianbank.co.in</span>
             </div>
           </div>
         )}

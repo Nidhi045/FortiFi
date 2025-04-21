@@ -17,7 +17,6 @@ import {
 } from "@/components/indian-bank/components/ui/dialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/indian-bank/components/ui/alert"
 import { AlertCircle, ArrowRight, ShieldAlert } from "lucide-react"
-import { useAccount } from "@/components/indian-bank/context/account-context"
 
 export function FundTransferForm() {
   const [amount, setAmount] = useState("")
@@ -28,7 +27,6 @@ export function FundTransferForm() {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [showBlockedAlert, setShowBlockedAlert] = useState(false)
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
-  const { addTransaction, getBalance } = useAccount()
 
   const ownAccounts = [
     { id: "acc1", name: "Savings Account - 6789XXXX1234" },
@@ -51,71 +49,39 @@ export function FundTransferForm() {
 
     if (isVirtualCardBlocked) {
       setShowBlockedAlert(true)
-      return
+    } else {
+      setShowConfirmation(true)
     }
-
-    const transferAmount = parseFloat(amount)
-    if (isNaN(transferAmount) || transferAmount <= 0) {
-      return
-    }
-
-    if (transferAmount > getBalance()) {
-      // Show insufficient balance error
-      return
-    }
-
-    setShowConfirmation(true)
   }
 
   const handleConfirmTransfer = () => {
-    const transferAmount = parseFloat(amount)
-    const beneficiary = [...indianBankBeneficiaries, ...otherBankBeneficiaries]
-      .find(b => b.id === selectedBeneficiary)
-
-    if (!beneficiary) return
-
-    // Add the transaction
-    addTransaction({
-      description: `Transfer to ${beneficiary.name}`,
-      amount: transferAmount,
-      type: "debit",
-    })
-
     setShowConfirmation(false)
-    setShowSuccessDialog(true)
-    setAmount("")
-    setRemarks("")
-    setSelectedBeneficiary("")
-  }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount)
+    // Show success message after a brief delay
+    setTimeout(() => {
+      setShowSuccessDialog(true)
+    }, 1000)
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Fund Transfer</CardTitle>
-        <CardDescription>Transfer money to any bank account</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="own" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="own">Own Accounts</TabsTrigger>
-            <TabsTrigger value="indian">Indian Bank</TabsTrigger>
-            <TabsTrigger value="other">Other Banks</TabsTrigger>
-          </TabsList>
-          <TabsContent value="own">
-            <div className="space-y-4">
+    <>
+      <Tabs defaultValue="own" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 bg-[#1C3E94] text-white">
+          <TabsTrigger value="own">Own Account</TabsTrigger>
+          <TabsTrigger value="indian">Indian Bank</TabsTrigger>
+          <TabsTrigger value="other">Other Bank</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="own">
+          <Card>
+            <CardHeader>
+              <CardTitle>Transfer to Own Account</CardTitle>
+              <CardDescription>Move funds between your Indian Bank accounts</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fromAccount">From Account</Label>
-                <Select value={fromAccount} onValueChange={setFromAccount}>
-                  <SelectTrigger>
+                <Label htmlFor="from-account">From Account</Label>
+                <Select onValueChange={setFromAccount}>
+                  <SelectTrigger id="from-account">
                     <SelectValue placeholder="Select account" />
                   </SelectTrigger>
                   <SelectContent>
@@ -127,10 +93,11 @@ export function FundTransferForm() {
                   </SelectContent>
                 </Select>
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="toAccount">To Account</Label>
-                <Select value={selectedBeneficiary} onValueChange={setSelectedBeneficiary}>
-                  <SelectTrigger>
+                <Label htmlFor="to-account">To Account</Label>
+                <Select onValueChange={setSelectedBeneficiary}>
+                  <SelectTrigger id="to-account">
                     <SelectValue placeholder="Select account" />
                   </SelectTrigger>
                   <SelectContent>
@@ -142,14 +109,50 @@ export function FundTransferForm() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="indian">
-            <div className="space-y-4">
+
               <div className="space-y-2">
-                <Label htmlFor="fromAccount">From Account</Label>
-                <Select value={fromAccount} onValueChange={setFromAccount}>
-                  <SelectTrigger>
+                <Label htmlFor="amount">Amount (₹)</Label>
+                <Input
+                  id="amount"
+                  placeholder="Enter amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="remarks">Remarks (Optional)</Label>
+                <Input
+                  id="remarks"
+                  placeholder="Add remarks"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="ml-auto bg-[#FFB100] text-[#1C3E94] hover:bg-[#ffa200]"
+                onClick={handleTransfer}
+                disabled={!selectedBeneficiary || !amount || !fromAccount}
+              >
+                Transfer Now <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="indian">
+          <Card>
+            <CardHeader>
+              <CardTitle>Transfer to Indian Bank Account</CardTitle>
+              <CardDescription>Send money to other Indian Bank accounts</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="from-account-ib">From Account</Label>
+                <Select onValueChange={setFromAccount}>
+                  <SelectTrigger id="from-account-ib">
                     <SelectValue placeholder="Select account" />
                   </SelectTrigger>
                   <SelectContent>
@@ -161,10 +164,11 @@ export function FundTransferForm() {
                   </SelectContent>
                 </Select>
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="beneficiary">Select Beneficiary</Label>
-                <Select value={selectedBeneficiary} onValueChange={setSelectedBeneficiary}>
-                  <SelectTrigger>
+                <Label htmlFor="to-account-ib">To Beneficiary</Label>
+                <Select onValueChange={setSelectedBeneficiary}>
+                  <SelectTrigger id="to-account-ib">
                     <SelectValue placeholder="Select beneficiary" />
                   </SelectTrigger>
                   <SelectContent>
@@ -176,14 +180,64 @@ export function FundTransferForm() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="other">
-            <div className="space-y-4">
+
               <div className="space-y-2">
-                <Label htmlFor="fromAccount">From Account</Label>
-                <Select value={fromAccount} onValueChange={setFromAccount}>
-                  <SelectTrigger>
+                <Label htmlFor="amount-ib">Amount (₹)</Label>
+                <Input
+                  id="amount-ib"
+                  placeholder="Enter amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="remarks-ib">Remarks (Optional)</Label>
+                <Input
+                  id="remarks-ib"
+                  placeholder="Add remarks"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="ml-auto bg-[#FFB100] text-[#1C3E94] hover:bg-[#ffa200]"
+                onClick={handleTransfer}
+                disabled={!selectedBeneficiary || !amount || !fromAccount}
+              >
+                Transfer Now <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="other">
+          <Card>
+            <CardHeader>
+              <CardTitle>Transfer to Other Bank</CardTitle>
+              <CardDescription>Send money via NEFT/RTGS/IMPS</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="transfer-mode">Transfer Mode</Label>
+                <Select onValueChange={setTransferMode}>
+                  <SelectTrigger id="transfer-mode">
+                    <SelectValue placeholder="Select mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="neft">NEFT</SelectItem>
+                    <SelectItem value="rtgs">RTGS</SelectItem>
+                    <SelectItem value="imps">IMPS</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="from-account-ob">From Account</Label>
+                <Select onValueChange={setFromAccount}>
+                  <SelectTrigger id="from-account-ob">
                     <SelectValue placeholder="Select account" />
                   </SelectTrigger>
                   <SelectContent>
@@ -195,10 +249,11 @@ export function FundTransferForm() {
                   </SelectContent>
                 </Select>
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="beneficiary">Select Beneficiary</Label>
-                <Select value={selectedBeneficiary} onValueChange={setSelectedBeneficiary}>
-                  <SelectTrigger>
+                <Label htmlFor="to-account-ob">To Beneficiary</Label>
+                <Select onValueChange={setSelectedBeneficiary}>
+                  <SelectTrigger id="to-account-ob">
                     <SelectValue placeholder="Select beneficiary" />
                   </SelectTrigger>
                   <SelectContent>
@@ -210,117 +265,141 @@ export function FundTransferForm() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-          </TabsContent>
-        </Tabs>
 
-        <div className="mt-4 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount</Label>
-            <Input
-              id="amount"
-              type="number"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="remarks">Remarks</Label>
-            <Input
-              id="remarks"
-              placeholder="Enter remarks"
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="transferMode">Transfer Mode</Label>
-            <Select value={transferMode} onValueChange={setTransferMode}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select transfer mode" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="immediate">Immediate</SelectItem>
-                <SelectItem value="scheduled">Scheduled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button className="w-full" onClick={handleTransfer}>
-          Transfer Now
-        </Button>
-      </CardFooter>
+              <div className="space-y-2">
+                <Label htmlFor="amount-ob">Amount (₹)</Label>
+                <Input
+                  id="amount-ob"
+                  placeholder="Enter amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+              </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="remarks-ob">Remarks (Optional)</Label>
+                <Input
+                  id="remarks-ob"
+                  placeholder="Add remarks"
+                  value={remarks}
+                  onChange={(e) => setRemarks(e.target.value)}
+                />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                className="ml-auto bg-[#FFB100] text-[#1C3E94] hover:bg-[#ffa200]"
+                onClick={handleTransfer}
+                disabled={!selectedBeneficiary || !amount || !fromAccount || !transferMode}
+              >
+                Transfer Now <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Confirmation Dialog */}
       <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Transfer</DialogTitle>
-            <DialogDescription>
-              Please confirm the transfer details before proceeding.
-            </DialogDescription>
+            <DialogDescription>Please review the transfer details before proceeding.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm font-medium">Amount</p>
-              <p className="text-lg font-semibold">{formatCurrency(parseFloat(amount))}</p>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="font-medium">Amount:</div>
+              <div>₹{amount}</div>
+              <div className="font-medium">To:</div>
+              <div>{selectedBeneficiary ? "Selected Beneficiary" : "Not selected"}</div>
+              <div className="font-medium">Remarks:</div>
+              <div>{remarks || "None"}</div>
             </div>
-            <div>
-              <p className="text-sm font-medium">To</p>
-              <p className="text-lg font-semibold">
-                {[...indianBankBeneficiaries, ...otherBankBeneficiaries]
-                  .find(b => b.id === selectedBeneficiary)?.name}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Remarks</p>
-              <p className="text-lg font-semibold">{remarks || "No remarks"}</p>
-            </div>
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Important</AlertTitle>
+              <AlertDescription>
+                Please verify all details. This transaction cannot be reversed once confirmed.
+              </AlertDescription>
+            </Alert>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowConfirmation(false)}>
               Cancel
             </Button>
-            <Button onClick={handleConfirmTransfer}>Confirm</Button>
+            <Button className="bg-[#1C3E94] hover:bg-[#152d6e]" onClick={handleConfirmTransfer}>
+              Confirm Transfer
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
+      {/* Blocked Virtual Card Alert */}
+      <Dialog open={showBlockedAlert} onOpenChange={setShowBlockedAlert}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Transfer Blocked</DialogTitle>
+            <DialogDescription>Your transfer cannot be processed at this time.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Alert variant="destructive">
+              <ShieldAlert className="h-4 w-4" />
+              <AlertTitle>Virtual Card Blocked</AlertTitle>
+              <AlertDescription>
+                Your virtual card has been blocked due to suspicious activity. For security reasons, fund transfers are
+                temporarily disabled.
+              </AlertDescription>
+            </Alert>
+            <p className="text-sm text-gray-500">
+              Please contact our customer support at 1800-425-1809 for assistance or visit your nearest Indian Bank
+              branch.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setShowBlockedAlert(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Dialog */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Transfer Successful</DialogTitle>
-            <DialogDescription>
-              Your money has been transferred successfully.
-            </DialogDescription>
+            <DialogTitle className="text-green-600">Transfer Successful</DialogTitle>
+            <DialogDescription>Your fund transfer has been processed successfully.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <p className="text-sm font-medium">Transaction ID</p>
-              <p className="text-lg font-semibold">TXN{Date.now().toString().slice(-8)}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Amount</p>
-              <p className="text-lg font-semibold">{formatCurrency(parseFloat(amount))}</p>
+          <div className="space-y-4 py-4">
+            <Alert className="border-green-300 bg-green-50">
+              <AlertCircle className="h-4 w-4 text-green-600" />
+              <AlertTitle className="text-green-800">Success</AlertTitle>
+              <AlertDescription className="text-green-700">
+                Your transfer of ₹{amount} has been completed. A confirmation SMS and email have been sent to your
+                registered contact details.
+              </AlertDescription>
+            </Alert>
+            <div className="grid grid-cols-2 gap-2 text-sm mt-4">
+              <div className="font-medium">Transaction ID:</div>
+              <div>TXN{Math.floor(Math.random() * 10000000000)}</div>
+              <div className="font-medium">Date & Time:</div>
+              <div>{new Date().toLocaleString("en-IN")}</div>
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={() => setShowSuccessDialog(false)}>Close</Button>
+            <Button
+              onClick={() => {
+                setShowSuccessDialog(false)
+                setAmount("")
+                setRemarks("")
+                setSelectedBeneficiary("")
+                setFromAccount("")
+                setTransferMode("")
+              }}
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {showBlockedAlert && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Transaction Blocked</AlertTitle>
-          <AlertDescription>
-            Your virtual card has been blocked. Please contact customer support.
-          </AlertDescription>
-        </Alert>
-      )}
-    </Card>
+    </>
   )
 }

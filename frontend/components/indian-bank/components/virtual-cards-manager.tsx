@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/indian-bank/components/ui/button"
 import { Badge } from "@/components/indian-bank/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/indian-bank/components/ui/alert"
-import { Eye, EyeOff, Clock, ShieldAlert, Plus, CreditCard } from "lucide-react"
+import { Eye, EyeOff, Clock, ShieldAlert, Plus, CreditCard, Loader2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -15,13 +15,26 @@ import {
   DialogTitle,
 } from "@/components/indian-bank/components/ui/dialog"
 
+type VirtualCard = {
+  id: string;
+  cardNumber: string;
+  fullCardNumber: string;
+  expiryDate: string;
+  cvv: string;
+  fullCvv: string;
+  status: "active" | "expired" | "blocked" | "pending";
+  expiresIn: string;
+  createdOn: string;
+  reason?: string;
+};
+
 export function VirtualCardsManager() {
   const [showCardDetails, setShowCardDetails] = useState<Record<string, boolean>>({})
   const [showGenerateDialog, setShowGenerateDialog] = useState(false)
   const [showManageDialog, setShowManageDialog] = useState(false)
   const [selectedCard, setSelectedCard] = useState<string | null>(null)
-
-  const virtualCards = [
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [virtualCards, setVirtualCards] = useState<VirtualCard[]>([
     {
       id: "vc-1",
       cardNumber: "4567 XXXX XXXX 7890",
@@ -52,10 +65,11 @@ export function VirtualCardsManager() {
       cvv: "XXX",
       fullCvv: "789",
       status: "blocked",
+      expiresIn: "Blocked",
       reason: "Blocked due to suspicious use on flagged domain",
       createdOn: "April 15, 2025",
     },
-  ]
+  ])
 
   const toggleCardDetails = (cardId: string) => {
     setShowCardDetails((prev) => ({
@@ -74,17 +88,61 @@ export function VirtualCardsManager() {
   }
 
   const handleConfirmGenerate = () => {
-    // Simulate card generation
-    alert("Your new virtual card has been generated successfully!")
-    setShowGenerateDialog(false)
-  }
+    setIsGenerating(true);
+    setShowGenerateDialog(false);
+    const pendingCard: VirtualCard = {
+      id: `vc-${Date.now()}`,
+      cardNumber: "XXXX XXXX XXXX XXXX",
+      fullCardNumber: "XXXX XXXX XXXX XXXX",
+      expiryDate: "--/--/----",
+      cvv: "XXX",
+      fullCvv: "XXX",
+      status: "pending",
+      expiresIn: "--:--",
+      createdOn: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      reason: "Your card is being generated. This may take a few moments."
+    };
+    setVirtualCards(prev => [pendingCard, ...prev]);
+    setTimeout(() => {
+      setVirtualCards(prev => {
+        const newCards = [...prev];
+        const generatedCard: VirtualCard = {
+          id: `vc-${Math.floor(1000 + Math.random() * 9000)}`,
+          cardNumber: `${Math.floor(1000 + Math.random() * 9000)} XXXX XXXX ${Math.floor(1000 + Math.random() * 9000)}`,
+          fullCardNumber: `${Math.floor(1000 + Math.random() * 9000)} ${Math.floor(1000 + Math.random() * 9000)} ${Math.floor(1000 + Math.random() * 9000)} ${Math.floor(1000 + Math.random() * 9000)}`,
+          expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB').split('/').join('/'),
+          cvv: "XXX",
+          fullCvv: `${Math.floor(100 + Math.random() * 900)}`,
+          status: "active",
+          expiresIn: "23:59",
+          createdOn: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+        };
+        const pendingIndex = newCards.findIndex(card => card.status === "pending");
+        if (pendingIndex !== -1) {
+          newCards[pendingIndex] = generatedCard;
+        }
+        
+        return newCards;
+      });
+      setIsGenerating(false);
+    }, 3000);
+  };
 
   return (
     <div className="grid gap-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Your Virtual Cards</h2>
-        <Button className="bg-[#FFB100] text-[#1C3E94] hover:bg-[#ffa200]" onClick={handleGenerateCard}>
-          <Plus className="mr-2 h-4 w-4" /> Generate New Card
+        <Button 
+          className="bg-[#FFB100] text-[#1C3E94] hover:bg-[#ffa200]" 
+          onClick={handleGenerateCard}
+          disabled={isGenerating}
+        >
+          {isGenerating ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="mr-2 h-4 w-4" />
+          )}
+          Generate New Card
         </Button>
       </div>
 
@@ -97,12 +155,20 @@ export function VirtualCardsManager() {
                 ? "border-red-300"
                 : card.status === "expired"
                   ? "border-gray-300"
-                  : "border-green-300"
+                  : card.status === "pending"
+                    ? "border-amber-300"
+                    : "border-green-300"
             }`}
           >
             <CardHeader
               className={`pb-2 ${
-                card.status === "blocked" ? "bg-red-50" : card.status === "expired" ? "bg-gray-50" : "bg-green-50"
+                card.status === "blocked" 
+                  ? "bg-red-50" 
+                  : card.status === "expired" 
+                    ? "bg-gray-50" 
+                    : card.status === "pending"
+                      ? "bg-amber-50"
+                      : "bg-green-50"
               }`}
             >
               <div className="flex justify-between items-center">
@@ -116,10 +182,18 @@ export function VirtualCardsManager() {
                       ? "bg-green-100 text-green-800 hover:bg-green-100"
                       : card.status === "expired"
                         ? "bg-gray-100 text-gray-800 hover:bg-gray-100"
-                        : "bg-red-100 text-red-800 hover:bg-red-100"
+                        : card.status === "pending"
+                          ? "bg-amber-100 text-amber-800 hover:bg-amber-100"
+                          : "bg-red-100 text-red-800 hover:bg-red-100"
                   }`}
                 >
-                  {card.status === "active" ? "Active" : card.status === "expired" ? "Expired" : "Blocked"}
+                  {card.status === "active" 
+                    ? "Active" 
+                    : card.status === "expired" 
+                      ? "Expired" 
+                      : card.status === "pending"
+                        ? "Generating..."
+                        : "Blocked"}
                 </Badge>
               </div>
               <CardDescription>Created on {card.createdOn}</CardDescription>
@@ -132,16 +206,18 @@ export function VirtualCardsManager() {
                     <div className="text-lg font-mono">
                       {showCardDetails[card.id] ? card.fullCardNumber : card.cardNumber}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="ml-2 h-8 w-8 p-0"
-                      onClick={() => toggleCardDetails(card.id)}
-                      disabled={card.status !== "active"}
-                    >
-                      {showCardDetails[card.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      <span className="sr-only">{showCardDetails[card.id] ? "Hide" : "Show"} card details</span>
-                    </Button>
+                    {card.status !== "pending" && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="ml-2 h-8 w-8 p-0"
+                        onClick={() => toggleCardDetails(card.id)}
+                        disabled={card.status !== "active"}
+                      >
+                        {showCardDetails[card.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        <span className="sr-only">{showCardDetails[card.id] ? "Hide" : "Show"} card details</span>
+                      </Button>
+                    )}
                   </div>
                 </div>
 
@@ -163,6 +239,14 @@ export function VirtualCardsManager() {
                   </div>
                 )}
 
+                {card.status === "pending" && (
+                  <Alert className="mt-4 border-amber-300 bg-amber-50">
+                    <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
+                    <AlertTitle className="text-amber-800">Card Generation in Progress</AlertTitle>
+                    <AlertDescription className="text-amber-700">{card.reason}</AlertDescription>
+                  </Alert>
+                )}
+
                 {card.status === "blocked" && (
                   <Alert variant="destructive" className="mt-4 border-red-300 bg-red-50">
                     <ShieldAlert className="h-4 w-4 text-red-600" />
@@ -180,6 +264,11 @@ export function VirtualCardsManager() {
               ) : card.status === "blocked" ? (
                 <Button className="w-full bg-[#FFB100] text-[#1C3E94] hover:bg-[#ffa200]" disabled>
                   Request New Card (Disabled for 30 mins)
+                </Button>
+              ) : card.status === "pending" ? (
+                <Button className="w-full bg-[#FFB100] text-[#1C3E94] hover:bg-[#ffa200]" disabled>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
                 </Button>
               ) : (
                 <Button className="w-full bg-[#FFB100] text-[#1C3E94] hover:bg-[#ffa200]" onClick={handleGenerateCard}>

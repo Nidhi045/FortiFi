@@ -4,20 +4,19 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/indian-bank/components/ui/card"
 import { Button } from "@/components/indian-bank/components/ui/button"
 import { Eye, EyeOff } from "lucide-react"
-import { useAccount } from "@/components/indian-bank/context/account-context"
+import { useAuth } from "@/lib/auth-context"
+import { realAccountData, phantomAccountData } from "@/lib/account-data"
 
 export function AccountSummaryCard() {
   const [showBalance, setShowBalance] = useState(false)
   const [showAccountNumber, setShowAccountNumber] = useState(false)
-  const { account, getBalance } = useAccount()
+  const { authState } = useAuth()
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount)
+  // Get the correct account data based on auth type
+  const accountData = authState.accountType === 'phantom' ? phantomAccountData : realAccountData
+
+  if (!authState.isAuthenticated) {
+    return null
   }
 
   return (
@@ -33,7 +32,7 @@ export function AccountSummaryCard() {
               <h3 className="text-sm font-medium text-gray-500">Account Number</h3>
               <div className="flex items-center mt-1">
                 <p className="text-lg font-semibold">
-                  {showAccountNumber ? account.fullAccountNumber : account.accountNumber}
+                  {showAccountNumber ? accountData.accountDetails.accountNumber : accountData.accountDetails.accountNumber.replace(/\d(?=\d{4})/g, "X")}
                 </p>
                 <Button
                   variant="ghost"
@@ -48,19 +47,19 @@ export function AccountSummaryCard() {
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">Account Type</h3>
-              <p className="mt-1 text-lg font-semibold">{account.type}</p>
+              <p className="mt-1 text-lg font-semibold">{accountData.accountDetails.accountType}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="text-sm font-medium text-gray-500">IFSC Code</h3>
-              <p className="mt-1 text-lg font-semibold">{account.ifsc}</p>
+              <p className="mt-1 text-lg font-semibold">{accountData.accountDetails.ifscCode}</p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">Available Balance</h3>
               <div className="flex items-center mt-1">
                 <p className="text-lg font-semibold text-green-600">
-                  {showBalance ? formatCurrency(getBalance()) : "₹XX,XXX.XX"}
+                  {showBalance ? accountData.accountDetails.balance : "₹XX,XXX.XX"}
                 </p>
                 <Button
                   variant="ghost"
@@ -76,16 +75,7 @@ export function AccountSummaryCard() {
           </div>
           <div className="mt-2 pt-4 border-t">
             <h3 className="text-sm font-medium text-gray-500">Last Login</h3>
-            <p className="mt-1 text-sm text-gray-700">
-              {new Date().toLocaleString('en-IN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-              })}
-            </p>
+            <p className="mt-1 text-sm text-gray-700">{accountData.accountDetails.lastLogin}</p>
           </div>
         </div>
       </CardContent>

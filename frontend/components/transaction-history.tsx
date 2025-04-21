@@ -26,7 +26,7 @@ const allTransactions = {
   U12345: [
     {
       id: "T12345",
-      date: "2023-04-01",
+      date: "2025-04-01",
       description: "Online Purchase - Amazon",
       amount: -12050,
       type: "debit",
@@ -35,7 +35,7 @@ const allTransactions = {
     },
     {
       id: "T12346",
-      date: "2023-04-02",
+      date: "2025-04-02",
       description: "Salary Deposit",
       amount: 350000,
       type: "credit",
@@ -44,7 +44,7 @@ const allTransactions = {
     },
     {
       id: "T12347",
-      date: "2023-04-03",
+      date: "2025-04-03",
       description: "ATM Withdrawal",
       amount: -20000,
       type: "debit",
@@ -53,7 +53,7 @@ const allTransactions = {
     },
     {
       id: "T12348",
-      date: "2023-04-03",
+      date: "2025-04-03",
       description: "International Transfer",
       amount: -150000,
       type: "debit",
@@ -62,7 +62,7 @@ const allTransactions = {
     },
     {
       id: "T12349",
-      date: "2023-04-04",
+      date: "2025-04-04",
       description: "Unknown Merchant",
       amount: -8999,
       type: "debit",
@@ -71,7 +71,7 @@ const allTransactions = {
     },
     {
       id: "T12350",
-      date: "2023-04-05",
+      date: "2025-04-05",
       description: "Grocery Store",
       amount: -6530,
       type: "debit",
@@ -80,7 +80,7 @@ const allTransactions = {
     },
     {
       id: "T12351",
-      date: "2023-04-06",
+      date: "2025-04-06",
       description: "Online Subscription",
       amount: -1499,
       type: "debit",
@@ -89,7 +89,7 @@ const allTransactions = {
     },
     {
       id: "T12352",
-      date: "2023-04-07",
+      date: "2025-04-07",
       description: "Gas Station",
       amount: -4500,
       type: "debit",
@@ -98,7 +98,7 @@ const allTransactions = {
     },
     {
       id: "T12353",
-      date: "2023-04-08",
+      date: "2025-04-08",
       description: "Restaurant Payment",
       amount: -7850,
       type: "debit",
@@ -107,7 +107,7 @@ const allTransactions = {
     },
     {
       id: "T12354",
-      date: "2023-04-09",
+      date: "2025-04-09",
       description: "Unusual Online Purchase",
       amount: -29999,
       type: "debit",
@@ -118,7 +118,7 @@ const allTransactions = {
   U67890: [
     {
       id: "T23456",
-      date: "2023-04-01",
+      date: "2025-04-01",
       description: "Grocery Shopping",
       amount: -5200,
       type: "debit",
@@ -127,7 +127,7 @@ const allTransactions = {
     },
     {
       id: "T23457",
-      date: "2023-04-02",
+      date: "2025-04-02",
       description: "Salary Credit",
       amount: 65000,
       type: "credit",
@@ -136,7 +136,7 @@ const allTransactions = {
     },
     {
       id: "T23458",
-      date: "2023-04-03",
+      date: "2025-04-03",
       description: "Mobile Recharge",
       amount: -999,
       type: "debit",
@@ -145,7 +145,7 @@ const allTransactions = {
     },
     {
       id: "T23459",
-      date: "2023-04-04",
+      date: "2025-04-04",
       description: "Online Shopping",
       amount: -3499,
       type: "debit",
@@ -154,7 +154,7 @@ const allTransactions = {
     },
     {
       id: "T23460",
-      date: "2023-04-05",
+      date: "2025-04-05",
       description: "Restaurant Bill",
       amount: -2500,
       type: "debit",
@@ -163,7 +163,7 @@ const allTransactions = {
     },
     {
       id: "T23461",
-      date: "2023-04-06",
+      date: "2025-04-06",
       description: "Cab Fare",
       amount: -450,
       type: "debit",
@@ -172,7 +172,7 @@ const allTransactions = {
     },
     {
       id: "T23462",
-      date: "2023-04-07",
+      date: "2025-04-07",
       description: "Movie Tickets",
       amount: -1200,
       type: "debit",
@@ -181,7 +181,7 @@ const allTransactions = {
     },
     {
       id: "T23463",
-      date: "2023-04-08",
+      date: "2025-04-08",
       description: "Unusual Foreign Transaction",
       amount: -25000,
       type: "debit",
@@ -194,7 +194,7 @@ const allTransactions = {
       id: "T12345",
       userId: "U12345",
       userName: "Rahul Sharma",
-      date: "2023-04-01",
+      date: "2025-04-01",
       description: "Online Purchase - Amazon",
       amount: -12050,
       type: "debit",
@@ -205,7 +205,7 @@ const allTransactions = {
       id: "T12346",
       userId: "U12345",
       userName: "Rahul Sharma",
-      date: "2023-04-02",
+      date: "2025-04-02",
       description: "Salary Deposit",
       amount: 350000,
       type: "credit",
@@ -216,7 +216,7 @@ const allTransactions = {
       id: "T23458",
       userId: "U67890",
       userName: "Priya Patel",
-      date: "2023-04-03",
+      date: "2025-04-03",
       description: "Mobile Recharge",
       amount: -999,
       type: "debit",
@@ -227,7 +227,7 @@ const allTransactions = {
       id: "T12349",
       userId: "U12345",
       userName: "Rahul Sharma",
-      date: "2023-04-04",
+      date: "2025-04-04",
       description: "Unknown Merchant",
       amount: -8999,
       type: "debit",
@@ -238,7 +238,7 @@ const allTransactions = {
       id: "T23463",
       userId: "U67890",
       userName: "Priya Patel",
-      date: "2023-04-08",
+      date: "2025-04-08",
       description: "Unusual Foreign Transaction",
       amount: -25000,
       type: "debit",

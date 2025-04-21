@@ -4,7 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { SidebarProvider } from "@/components/ui/sidebar"
-import { AccountProvider } from "@/components/indian-bank/context/account-context"
+import { AuthProvider } from "@/lib/auth-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -31,9 +31,9 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <AccountProvider>
+          <AuthProvider>
             <SidebarProvider>{children}</SidebarProvider>
-          </AccountProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
