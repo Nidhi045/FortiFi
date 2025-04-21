@@ -1,7 +1,7 @@
 # FortiFi
 
 
-# Decentralized AI-Powered Financial Fraud Prevention Framework
+# Decentralized AI-Powered Financial Fraud Detection Framework
 
 This repository contains the full-stack implementation of an advanced, privacy-compliant fraud prevention system designed for banks, fintech platforms, and digital payment infrastructures. It integrates decentralized identity, federated AI, privacy-first fraud detection, and secure transaction processing to counter modern financial threats.
 
