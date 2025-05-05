@@ -36,6 +36,11 @@ import { Button } from "@/components/ui/button"
 // Team member data
 const teamMembers = [
   {
+    name: "Vanitha Baskaran",
+    role: "Mentor; EMBA IIT Madras",
+    image: "/team/Maam.png",
+  },
+  {
     name: "Nidhi Gummaraju",
     role: "Blockchain & Compliance Developer",
     image: "/team/nidhi.jpg",
@@ -1021,7 +1026,7 @@ function Team() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           {teamMembers.map((member, index) => (
             <div key={index} className="text-center group flex flex-col items-center">
               <div className="relative h-48 w-48 md:h-56 md:w-56 mx-auto mb-5 rounded-full overflow-hidden border-2 border-[#00C3FF]/20 group-hover:border-[#00C3FF]/60 transition-all duration-300 shadow-lg group-hover:shadow-[#00C3FF]/20">
