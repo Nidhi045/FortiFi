@@ -37,7 +37,7 @@ import { Button } from "@/components/ui/button"
 const teamMembers = [
   {
     name: "Vanitha Baskaran",
-    role: "Mentor; EMBA IIT Madras",
+    role: "Mentor, EMBA IIT Madras",
     image: "/team/Maam.png",
   },
   {
